@@ -2,6 +2,11 @@ variable "name" {
   description = "Name of storage account, if it contains illigal characters (,-_ etc) those will be truncated."
 }
 
+variable "randomize_suffix" {
+  description = "Whether the account name should have a random suffix.  Account names must be globally unique."
+  default = true
+}
+
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
@@ -13,6 +18,16 @@ variable "location" {
 variable "account_tier" {
   description = "Defines the Tier to use for this storage account. Valid options are Standard and Premium. Changing this forces a new resource to be created."
   default     = "Standard"
+}
+
+variable "account_kind" {
+  description = "Defines the kind to use for this storage account. Valid options BlobStorage, BlockBlobStorage, FileStorage, Storage and StorageV2. Changing this forces a new resource to be created."
+  default     = "StorageV2"
+}
+
+variable "is_hns_enabled" {
+    description = "Defines if Hierarchical Namespace (Data Lake) is enabled. Changing this forces a new resource to be created."
+    default     = false
 }
 
 variable "account_replication_type" {
@@ -29,12 +44,6 @@ variable "soft_delete_retention" {
   description = "Number of retention days for soft delete. If set to null it will disable soft delete all together."
   type        = number
   default     = 31
-}
-
-variable "enable_advanced_threat_protection" {
-  description = "Boolean flag which controls if advanced threat protection is enabled."
-  type        = bool
-  default     = false
 }
 
 variable "network_rules" {

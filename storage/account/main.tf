@@ -1,10 +1,3 @@
-terraform {
-  required_version = ">= 0.12.0"
-  required_providers {
-    azurerm = ">= 1.33.0"
-  }
-}
-
 locals {
   default_event_rule = {
     event_delivery_schema = null
@@ -15,6 +8,8 @@ locals {
   }
 
   merged_events = [for event in var.events : merge(local.default_event_rule, event)]
+  name = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
+
 }
 
 data "azurerm_client_config" "current" {}
@@ -34,17 +29,14 @@ resource "random_string" "unique" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                              = format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result)
+  name                              = local.name
   resource_group_name               = data.terraform_remote_state.resource_group.outputs.name
   location                          = var.location
-  account_kind                      = "StorageV2"
+  account_kind                      = var.account_kind
   account_tier                      = var.account_tier
   account_replication_type          = var.account_replication_type
   access_tier                       = var.access_tier
-  enable_advanced_threat_protection = var.enable_advanced_threat_protection
-
-  enable_blob_encryption    = true
-  enable_file_encryption    = true
+  is_hns_enabled                    = var.is_hns_enabled
   enable_https_traffic_only = true
 
   dynamic "network_rules" {

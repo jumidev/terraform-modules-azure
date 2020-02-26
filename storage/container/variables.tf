@@ -27,12 +27,6 @@ variable "soft_delete_retention" {
   default     = 31
 }
 
-variable "enable_advanced_threat_protection" {
-  description = "Boolean flag which controls if advanced threat protection is enabled."
-  type        = bool
-  default     = false
-}
-
 variable "network_rules" {
   description = "Network rules restricing access to the storage account."
   type        = object({ ip_rules = list(string), subnet_ids = list(string), bypass = list(string) })
