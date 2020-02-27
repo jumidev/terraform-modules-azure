@@ -1,4 +1,5 @@
 locals {
+  soft_delete = var.is_hns_enabled ?  0 : var.soft_delete_retention != null ? 1 : 0
   name = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
 }
 
@@ -38,12 +39,12 @@ resource "azurerm_storage_account" "storage" {
       bypass                     = var.network_rules.bypass
     }
   }
-
+  
   tags = var.tags
 }
 
 resource "null_resource" "soft_delete" {
-  count = var.soft_delete_retention != null ? 1 : 0
+  count = local.soft_delete
 
   # TODO Not possible to do with azuread resources
   provisioner "local-exec" {
