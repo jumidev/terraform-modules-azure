@@ -16,23 +16,6 @@ variable "access_type" {
   default     = "private"
 }
 
-variable "access_tier" {
-  description = "Defines the access tier for BlobStorage and StorageV2 accounts. Valid options are Hot and Cool."
-  default     = "Hot"
-}
-
-variable "soft_delete_retention" {
-  description = "Number of retention days for soft delete. If set to null it will disable soft delete all together."
-  type        = number
-  default     = 31
-}
-
-variable "network_rules" {
-  description = "Network rules restricing access to the storage account."
-  type        = object({ ip_rules = list(string), subnet_ids = list(string), bypass = list(string) })
-  default     = null
-}
-
 variable "events" {
   description = "List of event subscriptions. See documentation for format description."
   type        = list(any)

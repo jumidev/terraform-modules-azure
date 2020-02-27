@@ -3,7 +3,7 @@ variable "name" {
 }
 
 variable "randomize_suffix" {
-  description = "Whether the account name should have a random suffix.  Account names must be globally unique."
+  description = "Whether the account name should have a random suffix, this can come in handy to easily guarantee that the account name is unique, since it must be globally unique."
   default = true
 }
 
@@ -50,12 +50,6 @@ variable "network_rules" {
   description = "Network rules restricing access to the storage account."
   type        = object({ ip_rules = list(string), subnet_ids = list(string), bypass = list(string) })
   default     = null
-}
-
-variable "events" {
-  description = "List of event subscriptions. See documentation for format description."
-  type        = list(any)
-  default     = []
 }
 
 variable "tags" {

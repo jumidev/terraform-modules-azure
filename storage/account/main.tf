@@ -1,15 +1,5 @@
 locals {
-  default_event_rule = {
-    event_delivery_schema = null
-    topic_name            = null
-    labels                = null
-    filters               = null
-    eventhub_id           = null
-  }
-
-  merged_events = [for event in var.events : merge(local.default_event_rule, event)]
   name = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
-
 }
 
 data "azurerm_client_config" "current" {}
@@ -63,28 +53,5 @@ resource "null_resource" "soft_delete" {
   depends_on = [azurerm_storage_account.storage]
 }
 
-resource "azurerm_eventgrid_event_subscription" "storage" {
-  count = length(local.merged_events)
-  name  = local.merged_events[count.index].name
-  scope = azurerm_storage_account.storage.id
 
-  event_delivery_schema = local.merged_events[count.index].event_delivery_schema
-  topic_name            = local.merged_events[count.index].topic_name
-  labels                = local.merged_events[count.index].labels
-
-  dynamic "eventhub_endpoint" {
-    for_each = local.merged_events[count.index].eventhub_id == null ? [] : [true]
-    content {
-      eventhub_id = local.merged_events[count.index].eventhub_id
-    }
-  }
-
-  dynamic "subject_filter" {
-    for_each = local.merged_events[count.index].filters == null ? [] : [true]
-    content {
-      subject_begins_with = lookup(local.merged_events[count.index].filters, "subject_begins_with", null) == null ? null : var.events[count.index].filters.subject_begins_with
-      subject_ends_with   = lookup(local.merged_events[count.index].filters, "subject_ends_with", null) == null ? null : var.events[count.index].filters.subject_ends_with
-    }
-  }
-}
 
