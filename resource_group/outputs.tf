@@ -1,6 +1,6 @@
 output "name" {
   description = "Name of the resource group."
-  value       = var.name 
+  value       = var.name
 }
 
 output "id" {

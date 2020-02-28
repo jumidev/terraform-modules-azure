@@ -4,7 +4,7 @@ variable "name" {
 
 variable "randomize_suffix" {
   description = "Whether the account name should have a random suffix, this can come in handy to easily guarantee that the account name is unique, since it must be globally unique."
-  default = true
+  default     = true
 }
 
 variable "rspath_resource_group" {
@@ -26,8 +26,8 @@ variable "account_kind" {
 }
 
 variable "is_hns_enabled" {
-    description = "Defines if Hierarchical Namespace (Data Lake) is enabled. Changing this forces a new resource to be created."
-    default     = false
+  description = "Defines if Hierarchical Namespace (Data Lake) is enabled. Changing this forces a new resource to be created."
+  default     = false
 }
 
 variable "account_replication_type" {

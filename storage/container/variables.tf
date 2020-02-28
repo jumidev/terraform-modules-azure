@@ -16,14 +16,3 @@ variable "access_type" {
   default     = "private"
 }
 
-variable "events" {
-  description = "List of event subscriptions. See documentation for format description."
-  type        = list(any)
-  default     = []
-}
-
-variable "tags" {
-  description = "Tags to apply to all resources created."
-  type        = map(string)
-  default     = {}
-}

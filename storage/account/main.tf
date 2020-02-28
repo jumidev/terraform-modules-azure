@@ -1,6 +1,6 @@
 locals {
-  soft_delete = var.is_hns_enabled ?  0 : var.soft_delete_retention != null ? 1 : 0
-  name = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
+  soft_delete = var.is_hns_enabled ? 0 : var.soft_delete_retention != null ? 1 : 0
+  name        = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
 }
 
 data "azurerm_client_config" "current" {}
@@ -9,7 +9,7 @@ data "terraform_remote_state" "resource_group" {
   backend = "local"
 
   config = {
-      path = "${var.rspath_resource_group}/terraform.tfstate"
+    path = "${var.rspath_resource_group}/terraform.tfstate"
   }
 }
 
@@ -20,14 +20,14 @@ resource "random_string" "unique" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                              = local.name
-  resource_group_name               = data.terraform_remote_state.resource_group.outputs.name
-  location                          = var.location
-  account_kind                      = var.account_kind
-  account_tier                      = var.account_tier
-  account_replication_type          = var.account_replication_type
-  access_tier                       = var.access_tier
-  is_hns_enabled                    = var.is_hns_enabled
+  name                      = local.name
+  resource_group_name       = data.terraform_remote_state.resource_group.outputs.name
+  location                  = var.location
+  account_kind              = var.account_kind
+  account_tier              = var.account_tier
+  account_replication_type  = var.account_replication_type
+  access_tier               = var.access_tier
+  is_hns_enabled            = var.is_hns_enabled
   enable_https_traffic_only = true
 
   dynamic "network_rules" {
@@ -39,7 +39,7 @@ resource "azurerm_storage_account" "storage" {
       bypass                     = var.network_rules.bypass
     }
   }
-  
+
   tags = var.tags
 }
 
