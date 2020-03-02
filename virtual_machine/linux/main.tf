@@ -2,24 +2,33 @@ locals {
 
   distributions = {
     # see `az vm image list`
-    debian = {
+    debian10 = {
       publisher = "Debian"
       offer     = "debian-10"
       sku       = "10"
 
     }
-    ubuntu = {
+    ubuntu18lts = {
       publisher = "Canonical"
       offer     = "UbuntuServer"
-      sku       = "16.04-LTS"
+      sku       = "18.04-LTS"
     }
-    centos = {
+    centos7 = {
       publisher = "OpenLogic"
       offer     = "CentOS"
       sku       = "7.5"
     }
 
   }
+
+  init_script = {
+    k0_shebang   = "#!/bin/bash\nset -eu"
+    k1_init      = file("./machine_extensions/${var.linux_distribution}.sh")
+    k2_data_disk = length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : ""
+    k3_docker    = var.install_docker ? file("./machine_extensions/docker.sh") : ""
+    k4_blobfuse  = var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : ""
+  }
+
 }
 
 data "terraform_remote_state" "resource_group" {
@@ -40,13 +49,23 @@ data "terraform_remote_state" "network_interfaces" {
   }
 }
 
+data "terraform_remote_state" "managed_disks" {
+  count = length(var.rspath_managed_disks)
+
+  backend = "local"
+
+  config = {
+    path = "${var.rspath_managed_disks[count.index]}/terraform.tfstate"
+  }
+}
+
 
 resource "azurerm_linux_virtual_machine" "this" {
   name                = var.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   location       = var.location
-  size           = var.size
+  size           = var.machine_size
   admin_username = "automation"
 
   network_interface_ids = data.terraform_remote_state.network_interfaces.*.outputs.id
@@ -68,6 +87,35 @@ resource "azurerm_linux_virtual_machine" "this" {
     sku       = lookup(local.distributions, var.linux_distribution).sku
     version   = "latest"
   }
+
+  additional_capabilities {
+    ultra_ssd_enabled = var.ultra_ssd_enabled
+  }
+  tags = var.tags
 }
 
 
+resource "azurerm_virtual_machine_extension" "init" {
+  name                 = "${var.name}-init"
+  virtual_machine_id   = azurerm_linux_virtual_machine.this.id
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
+  type_handler_version = "2.0"
+
+  settings = <<SETTINGS
+    {
+        "commandToExecute": ${jsonencode(join("\n", coalesce(values(local.init_script))))}
+    }
+SETTINGS
+
+  tags = var.tags
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "this" {
+  count                     = length(var.rspath_managed_disks)
+  managed_disk_id           = data.terraform_remote_state.managed_disks[count.index].outputs.id
+  virtual_machine_id        = azurerm_linux_virtual_machine.this.id
+  lun                       = count.index
+  caching                   = "ReadWrite"
+  write_accelerator_enabled = var.data_disk_write_accelerator
+}
