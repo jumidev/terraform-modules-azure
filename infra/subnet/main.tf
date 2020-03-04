@@ -15,6 +15,16 @@ data "terraform_remote_state" "virtual_network" {
   }
 }
 
+
+data "terraform_remote_state" "network_security_groups" {
+  count   = length(var.rspath_network_security_groups)
+  backend = "local"
+
+  config = {
+    path = "${var.rspath_network_security_groups[count.index]}/terraform.tfstate"
+  }
+}
+
 resource "azurerm_subnet" "this" {
   name                 = var.name
   resource_group_name  = data.terraform_remote_state.resource_group.outputs.name
@@ -29,12 +39,51 @@ resource "azurerm_subnet" "this" {
   dynamic "delegation" {
     for_each = var.delegations
     content {
-      name = var.delegations[count.index].name
+      name = delegation.value.name
       service_delegation {
-        name    = var.delegations[count.index].service_delegation_name
-        actions = var.delegations[count.index].service_delegation_actions
+        name    = delegation.value.name
+        actions = compact(split(" ", delegation.value.actions))
       }
     }
   }
 
+}
+
+resource "azurerm_subnet_network_security_group_association" "this" {
+  count                     = length(var.rspath_network_security_groups)
+  subnet_id                 = azurerm_subnet.this.id
+  network_security_group_id = data.terraform_remote_state.network_security_groups[count.index].outputs.id
+}
+
+resource "random_string" "unique" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+resource "azurerm_network_security_group" "deny" {
+  count               = var.default_deny_incoming ? 1 : 0
+  name                = "${data.terraform_remote_state.virtual_network.outputs.name}-${var.name}-${random_string.unique.result}-deny-incoming"
+  location            = var.location
+  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
+
+  security_rule {
+    name                       = "DefaultDenyAll"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+}
+
+resource "azurerm_subnet_network_security_group_association" "this_deny" {
+  count = var.default_deny_incoming ? 1 : 0
+
+  subnet_id                 = azurerm_subnet.this.id
+  network_security_group_id = azurerm_network_security_group.deny.0.id
 }

@@ -16,7 +16,7 @@ data "terraform_remote_state" "source_application_security_groups" {
   }
 }
 
-resource "azurerm_network_security_group" "this" {
+resource "azurerm_application_security_group" "this" {
   name                = var.name
   location            = var.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name

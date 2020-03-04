@@ -2,12 +2,27 @@ variable "name" {
   description = "Name of resource group to deploy resources in."
 }
 
+variable "location" {
+  description = "Location to deploy resources in."
+}
+
 variable "rspath_virtual_network" {
   description = "Remote state key of the virtual network."
 }
 
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
+}
+
+variable "rspath_network_security_groups" {
+  description = "Remote state key of network securiy groups to associate with this subnet."
+  type        = list(string)
+  default     = []
+}
+
+variable "default_deny_incoming" {
+  description = "Should incoming traffic be denied by default to this subnet? Default = True."
+  default     = true
 }
 
 variable "address_space" {
@@ -32,6 +47,11 @@ variable "service_endpoints" {
 
 variable "delegations" {
   description = "list of delegations to associate with the subnet.See https://www.terraform.io/docs/providers/azurerm/r/subnet.html#delegation"
-  type        = list(map(any))
-  default     = []
+  type        = map(map(string))
+  default     = {}
+  # example for databricks https://docs.microsoft.com/en-us/azure/databricks/administration-guide/cloud-configurations/azure/vnet-inject
+  #{anykey = {
+  #  name = "Microsoft.Databricks/workspaces"
+  #  actions = "Microsoft.Network/networkinterfaces/*
+  #}}
 }

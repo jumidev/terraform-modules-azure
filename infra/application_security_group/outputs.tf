@@ -5,5 +5,5 @@ output "name" {
 
 output "id" {
   description = "Id of the resource."
-  value       = azurerm_virtual_network.this.id
+  value       = azurerm_application_security_group.this.id
 }

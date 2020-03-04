@@ -27,7 +27,7 @@ variable "rspath_network_interface_public_ip" {
 variable "ip" {
   description = "IP of A record"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "ttl" {

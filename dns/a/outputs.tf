@@ -1,10 +1,9 @@
 output "id" {
-  description = "Id of the dns zone created."
+  description = "Id of the dns record."
   value       = azurerm_dns_a_record.this.id
 }
 
-
 output "fqdn" {
-  description = "Id of the dns zone created."
+  description = "FQDN of the dns a record."
   value       = azurerm_dns_a_record.this.fqdn
 }

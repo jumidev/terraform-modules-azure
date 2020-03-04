@@ -1,5 +1,5 @@
 locals {
-  
+
 }
 
 data "terraform_remote_state" "resource_group" {
@@ -41,8 +41,8 @@ resource "azurerm_dns_a_record" "this" {
   zone_name           = data.terraform_remote_state.dns_zone.outputs.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
   ttl                 = var.ttl
-  records             = compact(concat(
-      data.terraform_remote_state.network_interface_private_ip.*.outputs.private_ip_address, 
-      data.terraform_remote_state.network_interface_public_ip.*.outputs.public_ip_address,
-      [var.ip]))
+  records = compact(concat(
+    data.terraform_remote_state.network_interface_private_ip.*.outputs.private_ip_address,
+    data.terraform_remote_state.network_interface_public_ip.*.outputs.public_ip_address,
+  [var.ip]))
 }

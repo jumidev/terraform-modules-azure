@@ -21,13 +21,6 @@ variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
 
-variable "assign_public_ip" {
-  description = "Should a publc ip be allocated to the network interface."
-  type        = bool
-  default     = false
-}
-
-
 variable "private_ip_address_allocation" {
   description = "The allocation method used for the Private IP Address. Possible values are Dynamic and Static."
   default     = "Dynamic"
