@@ -21,6 +21,11 @@ variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
 
+variable "rspath_application_security_group" {
+  description = "Optional Remote state key of application security group to associate to NIC."
+  default     = ""
+}
+
 variable "assign_public_ip" {
   description = "Should a public ip be allocated to the network interface."
   type        = bool

@@ -21,6 +21,11 @@ variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
 
+variable "rspath_application_security_group" {
+  description = "Optional Remote state key of application security group to associate to NIC."
+  default     = ""
+}
+
 variable "private_ip_address_allocation" {
   description = "The allocation method used for the Private IP Address. Possible values are Dynamic and Static."
   default     = "Dynamic"

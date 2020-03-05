@@ -15,6 +15,17 @@ data "terraform_remote_state" "subnet" {
   }
 }
 
+
+data "terraform_remote_state" "application_security_group" {
+  count   = var.rspath_application_security_group != "" ? 1 : 0
+  backend = "local"
+
+  config = {
+    path = "${var.rspath_application_security_group}/terraform.tfstate"
+  }
+}
+
+
 resource "azurerm_network_interface" "this" {
   name                = "${var.name}private"
   location            = var.location
@@ -28,4 +39,11 @@ resource "azurerm_network_interface" "this" {
   }
   tags = var.tags
 
+}
+
+# associate application security group to NIC
+resource "azurerm_network_interface_application_security_group_association" "this" {
+  count                         = var.rspath_application_security_group != "" ? 1 : 0
+  network_interface_id          = azurerm_network_interface.this.id
+  application_security_group_id = data.terraform_remote_state.application_security_group.0.outputs.id
 }

@@ -15,13 +15,12 @@ data "terraform_remote_state" "virtual_network" {
   }
 }
 
-
-data "terraform_remote_state" "network_security_groups" {
-  count   = length(var.rspath_network_security_groups)
+data "terraform_remote_state" "network_security_group" {
+  count   = var.rspath_network_security_groups != "" ? 1 : 0
   backend = "local"
 
   config = {
-    path = "${var.rspath_network_security_groups[count.index]}/terraform.tfstate"
+    path = "${var.rspath_network_security_group}/terraform.tfstate"
   }
 }
 
@@ -50,40 +49,7 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this" {
-  count                     = length(var.rspath_network_security_groups)
+  count                     = var.rspath_network_security_groups != "" ? 1 : 0
   subnet_id                 = azurerm_subnet.this.id
-  network_security_group_id = data.terraform_remote_state.network_security_groups[count.index].outputs.id
-}
-
-resource "random_string" "unique" {
-  length  = 6
-  special = false
-  upper   = false
-}
-
-resource "azurerm_network_security_group" "deny" {
-  count               = var.default_deny_incoming ? 1 : 0
-  name                = "${data.terraform_remote_state.virtual_network.outputs.name}-${var.name}-${random_string.unique.result}-deny-incoming"
-  location            = var.location
-  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
-
-  security_rule {
-    name                       = "DefaultDenyAll"
-    priority                   = 4096
-    direction                  = "Inbound"
-    access                     = "Deny"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-}
-
-resource "azurerm_subnet_network_security_group_association" "this_deny" {
-  count = var.default_deny_incoming ? 1 : 0
-
-  subnet_id                 = azurerm_subnet.this.id
-  network_security_group_id = azurerm_network_security_group.deny.0.id
+  network_security_group_id = data.terraform_remote_state.network_security_group.0.outputs.id
 }

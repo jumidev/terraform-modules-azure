@@ -14,15 +14,10 @@ variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
 
-variable "rspath_network_security_groups" {
-  description = "Remote state key of network securiy groups to associate with this subnet."
-  type        = list(string)
-  default     = []
-}
-
-variable "default_deny_incoming" {
-  description = "Should incoming traffic be denied by default to this subnet? Default = True."
-  default     = true
+variable "rspath_network_security_group" {
+  description = "Remote state key of an optional network securiy group to associate with this subnet."
+  type        = string
+  default     = "" # none
 }
 
 variable "address_space" {
