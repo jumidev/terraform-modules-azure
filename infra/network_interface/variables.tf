@@ -12,7 +12,6 @@ variable "tags" {
   default     = {}
 }
 
-
 variable "rspath_subnet" {
   description = "Remote state key of the subnet."
 }
@@ -23,6 +22,11 @@ variable "rspath_resource_group" {
 
 variable "rspath_application_security_group" {
   description = "Optional Remote state key of application security group to associate to NIC."
+  default     = ""
+}
+
+variable "rspath_network_security_group" {
+  description = "Optional Remote state key of network security group to associate to NIC."
   default     = ""
 }
 

@@ -16,7 +16,7 @@ data "terraform_remote_state" "virtual_network" {
 }
 
 data "terraform_remote_state" "network_security_group" {
-  count   = var.rspath_network_security_groups != "" ? 1 : 0
+  count   = var.rspath_network_security_group != "" ? 1 : 0
   backend = "local"
 
   config = {
@@ -49,7 +49,7 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this" {
-  count                     = var.rspath_network_security_groups != "" ? 1 : 0
+  count                     = var.rspath_network_security_group != "" ? 1 : 0
   subnet_id                 = azurerm_subnet.this.id
   network_security_group_id = data.terraform_remote_state.network_security_group.0.outputs.id
 }
