@@ -27,6 +27,7 @@ locals {
     k2_data_disk = length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : ""
     k3_docker    = var.install_docker ? file("./machine_extensions/docker.sh") : ""
     k4_blobfuse  = var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : ""
+    k5_fail2ban  = var.install_fail2ban ? file("./machine_extensions/fail2ban.sh") : ""
   }
 
 }
@@ -104,7 +105,7 @@ resource "azurerm_virtual_machine_extension" "init" {
 
   settings = <<SETTINGS
     {
-        "commandToExecute": ${jsonencode(join("\n", coalesce(values(local.init_script))))}
+        "script": "${base64gzip(join("\n", coalesce(values(local.init_script))))}"
     }
 SETTINGS
 

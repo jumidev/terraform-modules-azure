@@ -7,6 +7,12 @@ mkdir /data || true
 
 fstab="/dev/sdc /data xfs defaults 0 1"
 
+# add mount line to fstab if it's not already there
 cat /etc/fstab | grep "$fstab" || echo "$fstab" >> /etc/fstab
 
-mount /data
+if mountpoint -q "/data" ; then
+    echo "/data already mounted"
+else
+    mount /data 
+fi
+

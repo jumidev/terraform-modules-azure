@@ -74,3 +74,9 @@ variable "install_docker" {
   default     = false
 }
 
+
+variable "install_fail2ban" {
+  description = "Should fail2ban be installed with ssh filters?  Defaults to false"
+  default     = false
+}
+
