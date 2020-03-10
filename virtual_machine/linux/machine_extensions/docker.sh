@@ -1,24 +1,27 @@
 # docker
 
-# if /data is set up, use that for docker stuff
-if [ -d /data ] ; then
+if mountpoint -q "/data" ; then
+    echo "/data directory mounted, using for docker"
     mkdir /data/docker || true
-    ln -s /data/docker /var/lib/docker
+    if [ ! -L /var/lib/docker ] ; then
+        ln -s /data/docker /var/lib/docker
+    fi
 fi
 
+docker --version || (
+    cd /tmp
 
-cd /tmp
+    curl -fsSL get.docker.com -o get-docker.sh 
+    apt update -y && sh get-docker.sh
 
-curl -fsSL get.docker.com -o get-docker.sh 
-apt update -y && sh get-docker.sh
+    # lock packages at current version, upgrading seems to break things
+    # https://github.com/docker/for-linux/issues/709#issuecomment-506982588
+    echo "docker-ce hold"     | dpkg --set-selections
+    echo "docker-ce-cli hold" | dpkg --set-selections
+    echo "containerd.io hold" | dpkg --set-selections
+)
 
-# lock packages at current version, upgrading seems to break things
-# https://github.com/docker/for-linux/issues/709#issuecomment-506982588
-echo "docker-ce hold"     | dpkg --set-selections
-echo "docker-ce-cli hold" | dpkg --set-selections
-echo "containerd.io hold" | dpkg --set-selections
-
-apt install -y docker-compose 
+docker-compose --version || apt install -y docker-compose 
 
 cd /etc/cron.daily
 
