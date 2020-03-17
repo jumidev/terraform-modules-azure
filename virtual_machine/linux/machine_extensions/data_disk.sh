@@ -1,6 +1,14 @@
+# debian / ubuntu
+if  which apt ; then
+    apt update -y 
+    apt install -y xfsprogs
+fi
 
-apt update -y 
-apt install -y xfsprogs
+# centos
+if which yum ; then
+    yum install -y xfsdump xfsprogs
+fi
+
 
 mkfs.xfs /dev/sdc || true  #mkfs.xfs on an existing partition will fail, so catch case here
 mkdir /data || true

@@ -110,8 +110,7 @@ resource "azurerm_network_interface_application_security_group_association" "thi
   application_security_group_id = data.terraform_remote_state.application_security_group.0.outputs.id
 }
 
-
-# associate application security group to NIC
+# associate network security group to NIC
 resource "azurerm_network_interface_security_group_association" "this" {
   count                     = var.rspath_network_security_group != "" ? 1 : 0
   network_interface_id      = local.azurerm_network_interface.0.id

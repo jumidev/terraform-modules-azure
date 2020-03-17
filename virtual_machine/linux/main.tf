@@ -27,7 +27,8 @@ locals {
     k2_data_disk = length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : ""
     k3_docker    = var.install_docker ? file("./machine_extensions/docker.sh") : ""
     k4_blobfuse  = var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : ""
-    k5_fail2ban  = var.install_fail2ban ? file("./machine_extensions/fail2ban.sh") : ""
+    k5_azcli     = var.install_azcli ? file("./machine_extensions/azcli.sh") : ""
+    k6_fail2ban  = var.install_fail2ban ? file("./machine_extensions/fail2ban.sh") : ""
   }
 
 }
@@ -60,19 +61,18 @@ data "terraform_remote_state" "managed_disks" {
   }
 }
 
-
 resource "azurerm_linux_virtual_machine" "this" {
   name                = var.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   location       = var.location
   size           = var.machine_size
-  admin_username = "automation"
+  admin_username = var.ssh_user
 
   network_interface_ids = data.terraform_remote_state.network_interfaces.*.outputs.id
 
   admin_ssh_key {
-    username   = "automation"
+    username   = var.ssh_user
     public_key = file(var.public_key_file)
   }
 
@@ -92,6 +92,15 @@ resource "azurerm_linux_virtual_machine" "this" {
   additional_capabilities {
     ultra_ssd_enabled = var.ultra_ssd_enabled
   }
+
+
+  dynamic "identity" {
+    for_each = var.enable_system_assigned_managed_identity ? [true] : []
+    content {
+      type = "SystemAssigned"
+    }
+  }
+
   tags = var.tags
 }
 

@@ -1,5 +1,3 @@
-# TODO fail2ban for ssh
-
 
 mkdir -p /etc/fail2ban || true 
 
@@ -27,8 +25,10 @@ filter    = sshd
 
 EOF
 
-apt update -y
-apt install -y fail2ban
+fail2ban-client --version || (
+    apt update -y
+    apt install -y fail2ban
 
-systemctl enable fail2ban
+    systemctl enable fail2ban
+)
 systemctl restart fail2ban
