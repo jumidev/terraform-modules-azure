@@ -1,0 +1,4 @@
+# Ignored files
+*.tfstate*
+*.terraform/
+*.out
