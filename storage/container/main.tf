@@ -11,7 +11,7 @@ data "terraform_remote_state" "storage_account" {
   }
 }
 
-resource "azurerm_storage_container" "storage" {
+resource "azurerm_storage_container" "this" {
   name                  = var.name
   storage_account_name  = data.terraform_remote_state.storage_account.outputs.name
   container_access_type = var.access_type
