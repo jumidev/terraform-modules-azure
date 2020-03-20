@@ -10,7 +10,7 @@ data "terraform_remote_state" "resource_group" {
   }
 }
 
-resource "azurerm_dns_zone" "this" {
+resource "azurerm_private_dns_zone" "this" {
   name                = var.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 

@@ -21,15 +21,18 @@ locals {
 
   }
 
-  init_script = {
-    k0_shebang   = "#!/bin/bash\nset -eu"
-    k1_init      = file("./machine_extensions/${var.linux_distribution}.sh")
-    k2_data_disk = length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : ""
-    k3_docker    = var.install_docker ? file("./machine_extensions/docker.sh") : ""
-    k4_blobfuse  = var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : ""
-    k5_azcli     = var.install_azcli ? file("./machine_extensions/azcli.sh") : ""
-    k6_fail2ban  = var.install_fail2ban ? file("./machine_extensions/fail2ban.sh") : ""
-  }
+  machine_extensions = [
+    "#!/bin/bash\nset -eu",
+    file("./machine_extensions/${var.linux_distribution}.sh"),
+    length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : "",
+    var.swap_size_mb > 0 ? "export SWAP_SIZE=${var.swap_size_mb}M" : "",
+    "export SWAP_FILE=${var.swap_file}",
+    var.swap_size_mb > 0 ? file("./machine_extensions/swap.sh") : "",
+    var.install_docker ? file("./machine_extensions/docker.sh") : "",
+    var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : "",
+    var.install_azcli ? file("./machine_extensions/azcli.sh") : "",
+    var.install_fail2ban ? file("./machine_extensions/fail2ban.sh") : ""
+  ]
 
 }
 
@@ -104,6 +107,10 @@ resource "azurerm_linux_virtual_machine" "this" {
   tags = var.tags
 }
 
+data "local_file" "custom_extensions" {
+  count    = length(var.custom_machine_extensions)
+  filename = var.custom_machine_extensions[count.index]
+}
 
 resource "azurerm_virtual_machine_extension" "init" {
   name                 = "${var.name}-init"
@@ -114,7 +121,7 @@ resource "azurerm_virtual_machine_extension" "init" {
 
   settings = <<SETTINGS
     {
-        "script": "${base64gzip(join("\n", coalesce(values(local.init_script))))}"
+        "script": "${base64gzip(join("\n", coalesce(local.machine_extensions), data.local_file.custom_extensions.*.content))}"
     }
 SETTINGS
 
