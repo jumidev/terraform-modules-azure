@@ -80,6 +80,16 @@ variable "custom_machine_extensions" {
   default     = []
 }
 
+variable "swap_size_mb" {
+  description = "Optional swap size, in megabytes, to enable.  Default is 0 (no swap)"
+  default     = 0
+}
+
+variable "swap_file" {
+  description = "Path to swapfile (if swap_size_gb > 0)"
+  default     = "/swapfile"
+}
+
 variable "install_blobfuse" {
   description = "Should blobfuse be installed?  Defaults to false"
   default     = false
