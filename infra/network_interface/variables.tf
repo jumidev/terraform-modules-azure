@@ -33,7 +33,7 @@ variable "rspath_network_security_group" {
 variable "assign_public_ip" {
   description = "Should a public ip be allocated to the network interface."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "private_ip_address_allocation" {
