@@ -1,5 +1,5 @@
 variable rg_name {
-    default = "k8s-infra-dev"
+    default = "k8s-dev"
 }
 
 variable vnet_name {

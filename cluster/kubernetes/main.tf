@@ -32,6 +32,7 @@ resource "azurerm_kubernetes_cluster" "this" {
         load_balancer_sku  = "Standard"
         load_balancer_profile {
             outbound_ip_address_ids = [ azurerm_public_ip.this.id ]
+            # outbound_ip_address_ids = azurerm_lb_backend_address_pool.this.backend_ip_configurations
         }
     }
 
@@ -59,9 +60,12 @@ resource "azurerm_kubernetes_cluster" "this" {
     depends_on = [
         azurerm_public_ip.this,
         azurerm_subnet.this,
-        azurerm_subnet_route_table_association.this,
+        azurerm_role_assignment.netcontribrole,
+        # azurerm_network_interface_backend_address_pool_association.this,
+        # azurerm_subnet_route_table_association.this,
         # azurerm_network_interface_security_group_association.this,
-        azurerm_subnet_network_security_group_association.this        
+        # azurerm_subnet_network_security_group_association.this,
+        # azurerm_lb_outbound_rule.this,        
     ]
 
     tags = {
@@ -112,11 +116,23 @@ resource "azurerm_role_assignment" "netcontribrole" {
   principal_id         = data.azuread_service_principal.this.object_id
 }
 
+resource "azurerm_role_assignment" "netcontribrole1" {
+  scope                = azurerm_virtual_network.this.id
+  role_definition_name = "Network Contributor"
+  principal_id         = data.azuread_service_principal.this.object_id
+}
+
+resource "azurerm_role_assignment" "netcontribrole2" {
+  scope                = azurerm_public_ip.this.id
+  role_definition_name = "Network Contributor"
+  principal_id         = data.azuread_service_principal.this.object_id
+}
+
 # resource "azurerm_network_interface" "this" {
 #   #count               = "${var.node_count}"
 #   name                = format("%s-%s", var.cluster_name, "interface")
-#   resource_group_name = var.rg_name
-#   location            = var.location
+#   resource_group_name = azurerm_resource_group.this.name
+#   location            = azurerm_resource_group.this.location
 
 #   enable_ip_forwarding      = true
 
@@ -131,4 +147,55 @@ resource "azurerm_role_assignment" "netcontribrole" {
 # resource "azurerm_network_interface_security_group_association" "this" {
 #   network_interface_id      = azurerm_network_interface.this.id
 #   network_security_group_id = azurerm_network_security_group.this.id
+# }
+
+
+# resource "azurerm_lb" "this" {
+#   name                = "example-lb"
+#   location            = azurerm_resource_group.this.location
+#   resource_group_name = azurerm_resource_group.this.name
+#   sku                 = "Standard"
+
+#   frontend_ip_configuration {
+#     name                 = "primary"
+#     public_ip_address_id = azurerm_public_ip.this.id
+#   }
+# }
+
+# resource "azurerm_lb_backend_address_pool" "this" {
+#   resource_group_name = azurerm_resource_group.this.name
+#   loadbalancer_id     = azurerm_lb.this.id
+#   name                = "acctestpool"
+# }
+
+# resource "azurerm_network_interface" "this" {
+#   name                = "example-nic"
+#   location            = azurerm_resource_group.this.location
+#   resource_group_name = azurerm_resource_group.this.name
+
+#     # enable_ip_forwarding      = true
+#   ip_configuration {
+#     name                          = "testconfiguration1"
+#     subnet_id                     = azurerm_subnet.this.id
+#     private_ip_address_allocation = "Dynamic"
+#     # public_ip_address_id          = azurerm_public_ip.this.id
+#   }
+# }
+
+# resource "azurerm_network_interface_backend_address_pool_association" "this" {
+#   network_interface_id    = azurerm_network_interface.this.id
+#   ip_configuration_name   = "testconfiguration1"
+#   backend_address_pool_id = azurerm_lb_backend_address_pool.this.id
+# }
+
+# resource "azurerm_lb_outbound_rule" "this" {
+#   resource_group_name     = azurerm_resource_group.this.name
+#   loadbalancer_id         = azurerm_lb.this.id
+#   name                    = "OutboundRule"
+#   protocol                = "All"
+#   backend_address_pool_id = azurerm_lb_backend_address_pool.this.id
+
+#   frontend_ip_configuration {
+#     name = "primary"
+#   }
 # }
