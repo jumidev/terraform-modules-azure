@@ -21,7 +21,7 @@ locals {
 
   }
 
-  init_script = {
+  machine_extensions = {
     k0_shebang   = "#!/bin/bash\nset -eu"
     k1_init      = file("./machine_extensions/${var.linux_distribution}.sh")
     k2_data_disk = length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : ""
@@ -104,6 +104,10 @@ resource "azurerm_linux_virtual_machine" "this" {
   tags = var.tags
 }
 
+data "local_file" "custom_extensions" {
+  count    = length(var.custom_machine_extensions)
+  filename = var.custom_machine_extensions[count.index]
+}
 
 resource "azurerm_virtual_machine_extension" "init" {
   name                 = "${var.name}-init"
@@ -114,7 +118,7 @@ resource "azurerm_virtual_machine_extension" "init" {
 
   settings = <<SETTINGS
     {
-        "script": "${base64gzip(join("\n", coalesce(values(local.init_script))))}"
+        "script": "${base64gzip(join("\n", coalesce(values(local.machine_extensions)), data.local_file.custom_extensions.*.content))}"
     }
 SETTINGS
 

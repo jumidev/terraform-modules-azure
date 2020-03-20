@@ -75,6 +75,11 @@ variable "enable_system_assigned_managed_identity" {
   default     = true
 }
 
+variable "custom_machine_extensions" {
+  description = "Optional list of additional machine extension files"
+  default     = []
+}
+
 variable "install_blobfuse" {
   description = "Should blobfuse be installed?  Defaults to false"
   default     = false
