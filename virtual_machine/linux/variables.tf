@@ -78,6 +78,7 @@ variable "enable_system_assigned_managed_identity" {
 variable "custom_machine_extensions" {
   description = "Optional list of additional machine extension files"
   default     = []
+  type        = list(string)
 }
 
 variable "swap_size_mb" {
