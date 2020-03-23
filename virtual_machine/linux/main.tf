@@ -28,6 +28,7 @@ locals {
     var.swap_size_mb > 0 ? "export SWAP_SIZE=${var.swap_size_mb}M" : "",
     "export SWAP_FILE=${var.swap_file}",
     var.swap_size_mb > 0 ? file("./machine_extensions/swap.sh") : "",
+    file("./machine_extensions/ll.sh"),
     var.install_docker ? file("./machine_extensions/docker.sh") : "",
     var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : "",
     var.install_azcli ? file("./machine_extensions/azcli.sh") : "",

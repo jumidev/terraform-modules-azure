@@ -23,6 +23,12 @@ docker --version || (
 
 docker-compose --version || apt install -y docker-compose 
 
+# See https://stackoverflow.com/questions/51222996/docker-login-fails-on-a-server-with-no-x11-installed
+which gpg2 || (
+    apt install -y gnupg2 pass 
+    gpg2 --full-generate-key
+)
+
 cd /etc/cron.daily
 
 cat > docker-prune <<- EOF
