@@ -11,7 +11,7 @@ variable subnet_name {
 }
 
 variable "agent_count" {
-    default = 1
+    default = 3
 }
 
 variable cluster_name {
@@ -30,13 +30,17 @@ variable network_plugin {
     default = "azure" #"kubenet"
 }
 
-variable post_install_command {
-    default = "bash ./post-install.sh"
+variable post_deploy_command {
+    default = "bash ./scripts/post-deploy.sh"
 }
 
-#variable kubernetes_version {
-#    default = "1.12.6"
-#}
+variable services_install_command {
+    default = "bash ./scripts/install.sh"
+}
+
+variable kubernetes_version {
+   default = "1.17.3"
+}
 
 # variable "ssh_public_key" {
 #     default = "~/.ssh/id_rsa.pub"

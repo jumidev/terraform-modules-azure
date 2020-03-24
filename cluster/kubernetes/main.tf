@@ -4,13 +4,47 @@ locals {
   client_secret = chomp(file("/keybase/team/weatherforce.infra/service-principal/dev/client-secret"))
 }
 
+# Resource Group
+resource "azurerm_resource_group" "this" {
+    name     = var.rg_name
+    location = var.location
+}
+
+# Azure vnet
+resource "azurerm_virtual_network" "this" {
+    name                = var.vnet_name
+    location            = azurerm_resource_group.this.location
+    resource_group_name = azurerm_resource_group.this.name
+    address_space       = ["10.0.0.0/8"]
+}
+
+# Azure subnet
+resource "azurerm_subnet" "this" {
+    name                 = var.subnet_name
+    resource_group_name  = azurerm_resource_group.this.name
+    address_prefix       = "10.240.0.0/16"
+    virtual_network_name = azurerm_virtual_network.this.name
+}
+
+# Azure principal service
+data "azuread_service_principal" "this" {
+  application_id = local.client_id
+}
+
+# Azure Role Assignement
+resource "azurerm_role_assignment" "netcontribrole" {
+  scope                = azurerm_resource_group.this.id
+  role_definition_name = "Network Contributor"
+  principal_id         = data.azuread_service_principal.this.object_id
+}
+
 # Kubernetes Cluster
 resource "azurerm_kubernetes_cluster" "this" {
     name                = var.cluster_name
     location            = var.location
     resource_group_name = var.rg_name
     dns_prefix          = var.dns_prefix
-    node_resource_group = format("%s-%s-%s", var.cluster_name, var.rg_name, "rg") # "weathercluste-rg"
+    node_resource_group = format("%s-%s", var.cluster_name, "rg")
     # kubernetes_version  = var.kubernetes_version
 
     service_principal {
@@ -31,7 +65,7 @@ resource "azurerm_kubernetes_cluster" "this" {
         network_policy = var.network_plugin
         load_balancer_sku  = "Standard"
         load_balancer_profile {
-            outbound_ip_address_ids = [ azurerm_public_ip.this.id ]
+            # outbound_ip_address_ids = [ azurerm_public_ip.this.id ]
             # outbound_ip_address_ids = azurerm_lb_backend_address_pool.this.backend_ip_configurations
         }
     }
@@ -42,7 +76,8 @@ resource "azurerm_kubernetes_cluster" "this" {
 
     default_node_pool {
         name                = "default"
-        vm_size             = "Standard_B2s"
+        vm_size             = "Standard_B2ms"
+        os_disk_size_gb     = 30
         enable_auto_scaling = true
         node_count          = var.agent_count
         min_count           = 1
@@ -58,9 +93,9 @@ resource "azurerm_kubernetes_cluster" "this" {
     }
 
     depends_on = [
-        azurerm_public_ip.this,
         azurerm_subnet.this,
         azurerm_role_assignment.netcontribrole,
+        # azurerm_public_ip.this,
         # azurerm_network_interface_backend_address_pool_association.this,
         # azurerm_subnet_route_table_association.this,
         # azurerm_network_interface_security_group_association.this,
@@ -72,14 +107,21 @@ resource "azurerm_kubernetes_cluster" "this" {
         Environment = "dev"
     }
 
-    provisioner "local-exec" {
-        command = var.post_install_command
+    # # First provisioner: kubectl and helm install
+    # provisioner "local-exec" {
+    #     command = var.post_deploy_command
+    #     on_failure = continue
+    #     environment = {
+    #         AKS_NAME   = var.cluster_name
+    #         AKS_RG     = var.rg_name
+    #     }
+    # }
 
-        environment = {
-            AKS_NAME = var.cluster_name
-            AKS_RG   = var.rg_name
-        }
-    }
+    # # Second provisioner: services install
+    # provisioner "local-exec" {
+    #     command = var.services_install_command
+    #     on_failure = continue
+    # }
 }
 
 #  Additional Node Pool
@@ -93,109 +135,4 @@ resource "azurerm_kubernetes_cluster" "this" {
 #     min_count             = 1
 #     max_count             = 20
 #     vnet_subnet_id        = azurerm_subnet.subnet.id
-# }
-
-# Public IP
-resource "azurerm_public_ip" "this" {
-    name                = format("%s-%s", var.cluster_name, "ip")
-    location            = azurerm_resource_group.this.location
-    resource_group_name = azurerm_resource_group.this.name
-    allocation_method   = "Static"
-    sku = "Standard"
-}
-
-# Azure principal service
-data "azuread_service_principal" "this" {
-  application_id = local.client_id
-}
-
-# Azure Role Assignement
-resource "azurerm_role_assignment" "netcontribrole" {
-  scope                = azurerm_subnet.this.id
-  role_definition_name = "Network Contributor"
-  principal_id         = data.azuread_service_principal.this.object_id
-}
-
-resource "azurerm_role_assignment" "netcontribrole1" {
-  scope                = azurerm_virtual_network.this.id
-  role_definition_name = "Network Contributor"
-  principal_id         = data.azuread_service_principal.this.object_id
-}
-
-resource "azurerm_role_assignment" "netcontribrole2" {
-  scope                = azurerm_public_ip.this.id
-  role_definition_name = "Network Contributor"
-  principal_id         = data.azuread_service_principal.this.object_id
-}
-
-# resource "azurerm_network_interface" "this" {
-#   #count               = "${var.node_count}"
-#   name                = format("%s-%s", var.cluster_name, "interface")
-#   resource_group_name = azurerm_resource_group.this.name
-#   location            = azurerm_resource_group.this.location
-
-#   enable_ip_forwarding      = true
-
-#   ip_configuration {
-#     name                          = format("%s-%s", var.cluster_name, "ipconfig")
-#     private_ip_address_allocation = "dynamic"
-#     public_ip_address_id          = azurerm_public_ip.this.id #"${element(azurerm_public_ip.k8s-service-minion-publicip.*.id, count.index)}"
-#     subnet_id                     = azurerm_subnet.this.id
-#   }
-# }
-
-# resource "azurerm_network_interface_security_group_association" "this" {
-#   network_interface_id      = azurerm_network_interface.this.id
-#   network_security_group_id = azurerm_network_security_group.this.id
-# }
-
-
-# resource "azurerm_lb" "this" {
-#   name                = "example-lb"
-#   location            = azurerm_resource_group.this.location
-#   resource_group_name = azurerm_resource_group.this.name
-#   sku                 = "Standard"
-
-#   frontend_ip_configuration {
-#     name                 = "primary"
-#     public_ip_address_id = azurerm_public_ip.this.id
-#   }
-# }
-
-# resource "azurerm_lb_backend_address_pool" "this" {
-#   resource_group_name = azurerm_resource_group.this.name
-#   loadbalancer_id     = azurerm_lb.this.id
-#   name                = "acctestpool"
-# }
-
-# resource "azurerm_network_interface" "this" {
-#   name                = "example-nic"
-#   location            = azurerm_resource_group.this.location
-#   resource_group_name = azurerm_resource_group.this.name
-
-#     # enable_ip_forwarding      = true
-#   ip_configuration {
-#     name                          = "testconfiguration1"
-#     subnet_id                     = azurerm_subnet.this.id
-#     private_ip_address_allocation = "Dynamic"
-#     # public_ip_address_id          = azurerm_public_ip.this.id
-#   }
-# }
-
-# resource "azurerm_network_interface_backend_address_pool_association" "this" {
-#   network_interface_id    = azurerm_network_interface.this.id
-#   ip_configuration_name   = "testconfiguration1"
-#   backend_address_pool_id = azurerm_lb_backend_address_pool.this.id
-# }
-
-# resource "azurerm_lb_outbound_rule" "this" {
-#   resource_group_name     = azurerm_resource_group.this.name
-#   loadbalancer_id         = azurerm_lb.this.id
-#   name                    = "OutboundRule"
-#   protocol                = "All"
-#   backend_address_pool_id = azurerm_lb_backend_address_pool.this.id
-
-#   frontend_ip_configuration {
-#     name = "primary"
-#   }
 # }
