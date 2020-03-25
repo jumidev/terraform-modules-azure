@@ -1,27 +1,27 @@
-# Public IP
-resource "azurerm_public_ip" "this" {
-    name                = format("%s-%s", var.cluster_name, "ip")
-    location            = azurerm_resource_group.this.location
-    resource_group_name = azurerm_resource_group.this.name
-    allocation_method   = "Static"
-    sku = "Standard"
-}
+# # Public IP
+# resource "azurerm_public_ip" "this" {
+#     name                = format("%s-%s", var.cluster_name, "ip")
+#     location            = azurerm_resource_group.this.location
+#     resource_group_name = azurerm_resource_group.this.name
+#     allocation_method   = "Static"
+#     sku = "Standard"
+# }
 
-resource "azurerm_managed_disk" "this" {
-  name                 = "weathercluster-ssd"
-  location             = azurerm_resource_group.this.location
-  resource_group_name  = azurerm_resource_group.this.name
-  storage_account_type = "Standard_LRS"
-  create_option        = "Empty"
-  disk_size_gb         = "512"
+# resource "azurerm_managed_disk" "this" {
+#   name                 = "weathercluster-ssd"
+#   location             = azurerm_resource_group.this.location
+#   resource_group_name  = azurerm_resource_group.this.name
+#   storage_account_type = "Standard_LRS"
+#   create_option        = "Empty"
+#   disk_size_gb         = "512"
 
-}
+# }
 
-resource "azurerm_role_assignment" "netcontribroleX" {
-  scope                = azurerm_managed_disk.this.id
-  role_definition_name = "Network Contributor"
-  principal_id         = data.azuread_service_principal.this.object_id
-}
+# resource "azurerm_role_assignment" "netcontribroleX" {
+#   scope                = azurerm_managed_disk.this.id
+#   role_definition_name = "Network Contributor"
+#   principal_id         = data.azuread_service_principal.this.object_id
+# }
 
 # ------------------------------------------------------------------------ #
 

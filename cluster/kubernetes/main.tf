@@ -1,7 +1,7 @@
 # Local variables
 locals {
-  client_id     = chomp(file("/keybase/team/weatherforce.infra/service-principal/dev/client-id"))
-  client_secret = chomp(file("/keybase/team/weatherforce.infra/service-principal/dev/client-secret"))
+  client_id     = chomp(file( var.client_id ))
+  client_secret = chomp(file( var.client_secret ))
 }
 
 # Resource Group
@@ -15,14 +15,14 @@ resource "azurerm_virtual_network" "this" {
     name                = var.vnet_name
     location            = azurerm_resource_group.this.location
     resource_group_name = azurerm_resource_group.this.name
-    address_space       = ["10.0.0.0/8"]
+    address_space       = [ var.vnet_address_space ]
 }
 
 # Azure subnet
 resource "azurerm_subnet" "this" {
     name                 = var.subnet_name
     resource_group_name  = azurerm_resource_group.this.name
-    address_prefix       = "10.240.0.0/16"
+    address_prefix       = var.subnet_address_prefix
     virtual_network_name = azurerm_virtual_network.this.name
 }
 
@@ -64,10 +64,10 @@ resource "azurerm_kubernetes_cluster" "this" {
         network_plugin = var.network_plugin
         network_policy = var.network_plugin
         load_balancer_sku  = "Standard"
-        load_balancer_profile {
-            # outbound_ip_address_ids = [ azurerm_public_ip.this.id ]
-            # outbound_ip_address_ids = azurerm_lb_backend_address_pool.this.backend_ip_configurations
-        }
+        # load_balancer_profile {
+        #     # outbound_ip_address_ids = [ azurerm_public_ip.this.id ]
+        #     # outbound_ip_address_ids = azurerm_lb_backend_address_pool.this.backend_ip_configurations
+        # }
     }
 
     role_based_access_control {
@@ -76,19 +76,19 @@ resource "azurerm_kubernetes_cluster" "this" {
 
     default_node_pool {
         name                = "default"
-        vm_size             = "Standard_B2ms"
-        os_disk_size_gb     = 30
-        enable_auto_scaling = true
+        vm_size             = var.vm_default_size
+        # os_disk_size_gb     = 30
+        enable_auto_scaling = var.enable_auto_scaling
         node_count          = var.agent_count
-        min_count           = 1
-        max_count           = 20
+        min_count           = var.agent_min_count
+        max_count           = var.agent_max_count
         type                = "VirtualMachineScaleSets"
         vnet_subnet_id      = azurerm_subnet.this.id
     }
 
     addon_profile {
         kube_dashboard {
-        enabled = true
+        enabled = var.enable_dashboard
         }
     }
 
