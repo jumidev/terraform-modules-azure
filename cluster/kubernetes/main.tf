@@ -45,7 +45,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     resource_group_name = var.rg_name
     dns_prefix          = var.dns_prefix
     node_resource_group = format("%s-%s", var.cluster_name, "rg")
-    # kubernetes_version  = var.kubernetes_version
+    kubernetes_version  = var.kubernetes_version
 
     service_principal {
         client_id     = local.client_id

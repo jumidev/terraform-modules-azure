@@ -27,7 +27,7 @@ variable subnet_address_prefix {
 }
 
 variable "agent_count" {
-    default = 3
+    default = 1
 }
 
 variable "agent_min_count" {
@@ -43,7 +43,7 @@ variable "enable_auto_scaling" {
 }
 
 variable "vm_default_size" {
-    default = "Standard_B2ms"
+    default = "Standard_B8ms"
 }
 
 variable "enable_dashboard" {
@@ -66,6 +66,10 @@ variable network_plugin {
     default = "azure" #"kubenet"
 }
 
+variable kubernetes_version {
+   default = "1.17.3"
+}
+
 # variable post_deploy_command {
 #     default = "bash ./scripts/post-deploy.sh"
 # }
@@ -74,9 +78,6 @@ variable network_plugin {
 #     default = "bash ./scripts/install.sh"
 # }
 
-# variable kubernetes_version {
-#    default = "1.17.3"
-# }
 
 # variable "ssh_public_key" {
 #     default = "~/.ssh/id_rsa.pub"
