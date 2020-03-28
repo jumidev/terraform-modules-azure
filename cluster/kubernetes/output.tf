@@ -1,4 +1,7 @@
 
+# Command to refresh outputs
+# > terraform refresh
+
 output "client_key" {
     value = "${azurerm_kubernetes_cluster.this.kube_config.0.client_key}"
 }
@@ -25,4 +28,24 @@ output "kube_config" {
 
 output "host" {
     value = "${azurerm_kubernetes_cluster.this.kube_config.0.host}"
+}
+
+output "managed_disk_name" {
+  value = azurerm_managed_disk.this.name
+}
+
+output "managed_disk_id" {
+  value = azurerm_managed_disk.this.id
+}
+
+output "storage_account_name" {
+  value = azurerm_storage_account.this.name
+}
+
+output "storage_account_key" {
+  value = azurerm_storage_account.this.primary_access_key
+}
+
+output "share_file_name" {
+  value = azurerm_storage_share.this.name
 }

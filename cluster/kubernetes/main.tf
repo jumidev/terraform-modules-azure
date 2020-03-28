@@ -136,3 +136,38 @@ resource "azurerm_kubernetes_cluster" "this" {
 #     max_count             = 20
 #     vnet_subnet_id        = azurerm_subnet.subnet.id
 # }
+
+resource "azurerm_managed_disk" "this" {
+  name                 = "shared-static-disk"
+  location             = azurerm_resource_group.this.location
+  resource_group_name  = azurerm_resource_group.this.name
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "100"
+}
+
+resource "azurerm_role_assignment" "disk_role" {
+  scope                = azurerm_managed_disk.this.id
+  role_definition_name = "Owner"
+  principal_id         = data.azuread_service_principal.this.object_id
+}
+
+resource "azurerm_storage_account" "this" {
+  name                     = "wfdevstorage"
+  resource_group_name      = azurerm_resource_group.this.name
+  location                 = azurerm_resource_group.this.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_share" "this" {
+  name                 = "shared-static-file"
+  storage_account_name = azurerm_storage_account.this.name
+  quota                = 100
+}
+
+resource "azurerm_role_assignment" "file_role" {
+  scope                = azurerm_storage_account.this.id
+  role_definition_name = "Owner"
+  principal_id         = data.azuread_service_principal.this.object_id
+}
