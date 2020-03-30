@@ -1,9 +1,3 @@
-# Local variables
-locals {
-  client_id     = chomp(file( var.client_id ))
-  client_secret = chomp(file( var.client_secret ))
-}
-
 # Resource Group
 resource "azurerm_resource_group" "this" {
     name     = var.rg_name
@@ -28,7 +22,7 @@ resource "azurerm_subnet" "this" {
 
 # Azure principal service
 data "azuread_service_principal" "this" {
-  application_id = local.client_id
+  application_id = chomp(file( var.client_id ))
 }
 
 # Azure Role Assignement
@@ -48,17 +42,9 @@ resource "azurerm_kubernetes_cluster" "this" {
     kubernetes_version  = var.kubernetes_version
 
     service_principal {
-        client_id     = local.client_id
-        client_secret = local.client_secret
+        client_id     = chomp(file( var.client_id ))
+        client_secret = chomp(file( var.client_secret ))
     }
-
-    # linux_profile {
-    #     admin_username = "azureuser"
-
-    #     ssh_key {
-    #         key_data = file(var.ssh_public_key)
-    #     }
-    # }
 
     network_profile {
         network_plugin = var.network_plugin
@@ -91,6 +77,13 @@ resource "azurerm_kubernetes_cluster" "this" {
         enabled = var.enable_dashboard
         }
     }
+
+    # linux_profile {
+    #     admin_username = "azureuser"
+    #     ssh_key {
+    #         key_data = file(var.ssh_public_key)
+    #     }
+    # }
 
     depends_on = [
         azurerm_subnet.this,
@@ -137,6 +130,7 @@ resource "azurerm_kubernetes_cluster" "this" {
 #     vnet_subnet_id        = azurerm_subnet.subnet.id
 # }
 
+# Static disk for kubernetes
 resource "azurerm_managed_disk" "this" {
   name                 = "shared-static-disk"
   location             = azurerm_resource_group.this.location
@@ -146,12 +140,14 @@ resource "azurerm_managed_disk" "this" {
   disk_size_gb         = "100"
 }
 
+# Role assignment: allow k8s to have root access to the disk
 resource "azurerm_role_assignment" "disk_role" {
   scope                = azurerm_managed_disk.this.id
   role_definition_name = "Owner"
   principal_id         = data.azuread_service_principal.this.object_id
 }
 
+# Storage account
 resource "azurerm_storage_account" "this" {
   name                     = "wfdevstorage"
   resource_group_name      = azurerm_resource_group.this.name
@@ -160,12 +156,21 @@ resource "azurerm_storage_account" "this" {
   account_replication_type = "LRS"
 }
 
+# Blob storage container
+resource "azurerm_storage_container" "this" {
+  name                  = "shared-blob-storage"
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
+
+# File share
 resource "azurerm_storage_share" "this" {
   name                 = "shared-static-file"
   storage_account_name = azurerm_storage_account.this.name
   quota                = 100
 }
 
+# Role assignment: allow k8s to have root access to the storage account
 resource "azurerm_role_assignment" "file_role" {
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Owner"

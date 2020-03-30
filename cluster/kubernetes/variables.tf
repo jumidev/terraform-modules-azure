@@ -70,15 +70,14 @@ variable kubernetes_version {
    default = "1.17.3"
 }
 
+# variable "ssh_public_key" {
+#     default = "~/.ssh/id_rsa.pub"
+# }
+
 # variable post_deploy_command {
 #     default = "bash ./scripts/post-deploy.sh"
 # }
 
 # variable services_install_command {
 #     default = "bash ./scripts/install.sh"
-# }
-
-
-# variable "ssh_public_key" {
-#     default = "~/.ssh/id_rsa.pub"
 # }

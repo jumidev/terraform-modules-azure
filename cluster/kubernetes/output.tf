@@ -49,3 +49,7 @@ output "storage_account_key" {
 output "share_file_name" {
   value = azurerm_storage_share.this.name
 }
+
+output "blob_storage_name" {
+  value = azurerm_storage_container.this.name
+}
