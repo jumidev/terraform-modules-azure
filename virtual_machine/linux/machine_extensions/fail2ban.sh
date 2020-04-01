@@ -1,9 +1,14 @@
 
-mkdir -p /etc/fail2ban || true 
+mkdir -p /etc/fail2ban/jail.d || true 
 
-cd /etc/fail2ban 
+fail2ban-client --version || (
+    apt update -y
+    apt install -y fail2ban
 
-cat > jail.local <<- EOF
+    systemctl enable fail2ban
+)
+
+cat > /etc/fail2ban/jail.d/defaults-debian.conf <<- EOF
 [ssh]
 enabled = true
 port    = ssh
@@ -22,13 +27,8 @@ findtime  = 259200
 bantime   = 608400
 enabled   = true
 filter    = sshd
+blocktype = DROP
 
 EOF
 
-fail2ban-client --version || (
-    apt update -y
-    apt install -y fail2ban
-
-    systemctl enable fail2ban
-)
 systemctl restart fail2ban

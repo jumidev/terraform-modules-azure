@@ -11,3 +11,6 @@ EOF
 sudo  chmod +x apt-autoremove
 
 cd -
+
+# initial apt update
+apt update -y

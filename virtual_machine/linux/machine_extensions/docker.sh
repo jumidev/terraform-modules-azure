@@ -19,6 +19,9 @@ docker --version || (
     echo "docker-ce hold"     | dpkg --set-selections
     echo "docker-ce-cli hold" | dpkg --set-selections
     echo "containerd.io hold" | dpkg --set-selections
+
+    # add default $SSH_USER to docker group
+    usermod -a -G docker $SSH_USER
 )
 
 docker-compose --version || apt install -y docker-compose 
@@ -26,7 +29,6 @@ docker-compose --version || apt install -y docker-compose
 # See https://stackoverflow.com/questions/51222996/docker-login-fails-on-a-server-with-no-x11-installed
 which gpg2 || (
     apt install -y gnupg2 pass 
-    gpg2 --full-generate-key
 )
 
 cd /etc/cron.daily
