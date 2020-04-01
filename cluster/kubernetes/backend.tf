@@ -15,5 +15,5 @@ provider "azurerm" {
 
 # Azure Active Directory
 provider "azuread" {
-  version = "~>0.7"
+  version = ">= 0.7"
 }

@@ -100,21 +100,14 @@ resource "azurerm_kubernetes_cluster" "this" {
         Environment = "dev"
     }
 
-    # # First provisioner: kubectl and helm install
-    # provisioner "local-exec" {
-    #     command = var.post_deploy_command
-    #     on_failure = continue
-    #     environment = {
-    #         AKS_NAME   = var.cluster_name
-    #         AKS_RG     = var.rg_name
-    #     }
-    # }
-
-    # # Second provisioner: services install
-    # provisioner "local-exec" {
-    #     command = var.services_install_command
-    #     on_failure = continue
-    # }
+    # Quickfix to avoid AKS replacement when the windows profile is missing
+    # Error: admin_username = "azureuser" -> null # forces replacement
+    # Opened issue: https://github.com/terraform-providers/terraform-provider-azurerm/issues/6235
+    lifecycle {
+      ignore_changes = [
+        windows_profile,
+      ]
+    }
 }
 
 #  Additional Node Pool
