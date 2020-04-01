@@ -52,3 +52,11 @@ output "share_file_name" {
 output "blob_storage_name" {
   value = azurerm_storage_container.this.name
 }
+
+output "public_ip_1" {
+  value = azurerm_public_ip.ip1.ip_address
+}
+
+output "public_ip_2" {
+  value = azurerm_public_ip.ip2.ip_address
+}

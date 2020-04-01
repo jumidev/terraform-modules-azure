@@ -122,20 +122,20 @@ resource "azurerm_role_assignment" "file_role" {
 
 # Public IP 1
 resource "azurerm_public_ip" "ip1" {
-    name                = format("%s-%s", var.cluster_name, "ip1")
-    location            = azurerm_resource_group.this.location
-    resource_group_name = azurerm_resource_group.this.name
-    allocation_method   = "Static"
-    sku = "Standard"
+  name                = format("%s-%s", var.cluster_name, "ip1")
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  allocation_method   = "Static"
+  sku = "Standard"
 }
 
 # Public IP 2
 resource "azurerm_public_ip" "ip2" {
-    name                = format("%s-%s", var.cluster_name, "ip2")
-    location            = azurerm_resource_group.this.location
-    resource_group_name = azurerm_resource_group.this.name
-    allocation_method   = "Static"
-    sku = "Standard"
+  name                = format("%s-%s", var.cluster_name, "ip2")
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  allocation_method   = "Static"
+  sku = "Standard"
 }
 
 # ------------------------------------------------------------------- #
