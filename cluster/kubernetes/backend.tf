@@ -17,3 +17,7 @@ provider "azurerm" {
 provider "azuread" {
   version = ">= 0.7"
 }
+
+provider "random" {
+  version = "= 2.1.0"
+}

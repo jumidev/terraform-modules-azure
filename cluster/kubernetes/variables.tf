@@ -1,9 +1,5 @@
-variable client_id {
-    default = "/keybase/team/weatherforce.infra/service-principal/dev/client-id"
-}
-
-variable client_secret {
-    default = "/keybase/team/weatherforce.infra/service-principal/dev/client-secret"
+variable "service_principal_name" {
+    default = "weathercluster-principal-dev"
 }
 
 variable rg_name {
@@ -72,12 +68,4 @@ variable kubernetes_version {
 
 # variable "ssh_public_key" {
 #     default = "~/.ssh/id_rsa.pub"
-# }
-
-# variable post_deploy_command {
-#     default = "bash ./scripts/post-deploy.sh"
-# }
-
-# variable services_install_command {
-#     default = "bash ./scripts/install.sh"
 # }

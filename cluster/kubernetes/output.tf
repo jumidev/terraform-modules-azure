@@ -1,4 +1,3 @@
-
 # Command to refresh outputs
 # > terraform refresh
 
