@@ -29,6 +29,18 @@ output "host" {
     value = "${azurerm_kubernetes_cluster.this.kube_config.0.host}"
 }
 
+output "kubernetes_resource_group_name" {
+  value = azurerm_resource_group.this.name
+}
+
+output "public_ip_main" {
+  value = azurerm_public_ip.main.ip_address
+}
+
+output "public_ip_pangeo" {
+  value = azurerm_public_ip.pangeo.ip_address
+}
+
 output "managed_disk_name" {
   value = azurerm_managed_disk.this.name
 }
@@ -51,12 +63,4 @@ output "share_file_name" {
 
 output "blob_storage_name" {
   value = azurerm_storage_container.this.name
-}
-
-output "public_ip_1" {
-  value = azurerm_public_ip.ip1.ip_address
-}
-
-output "public_ip_2" {
-  value = azurerm_public_ip.ip2.ip_address
 }

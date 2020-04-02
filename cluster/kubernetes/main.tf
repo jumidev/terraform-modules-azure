@@ -121,8 +121,8 @@ resource "azurerm_role_assignment" "file_role" {
 # ------------------------------------------------------------------- #
 
 # Public IP 1
-resource "azurerm_public_ip" "ip1" {
-  name                = format("%s-%s", var.cluster_name, "ip1")
+resource "azurerm_public_ip" "main" {
+  name                = format("%s-%s", var.cluster_name, "main")
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   allocation_method   = "Static"
@@ -130,8 +130,8 @@ resource "azurerm_public_ip" "ip1" {
 }
 
 # Public IP 2
-resource "azurerm_public_ip" "ip2" {
-  name                = format("%s-%s", var.cluster_name, "ip2")
+resource "azurerm_public_ip" "pangeo" {
+  name                = format("%s-%s", var.cluster_name, "pangeo")
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   allocation_method   = "Static"
@@ -159,7 +159,7 @@ resource "azurerm_kubernetes_cluster" "this" {
         network_policy = var.network_plugin
         load_balancer_sku  = "Standard"
         load_balancer_profile {
-            outbound_ip_address_ids = [ azurerm_public_ip.ip1.id, azurerm_public_ip.ip2.id ]
+            outbound_ip_address_ids = [ azurerm_public_ip.main.id ]
         }
     }
 
