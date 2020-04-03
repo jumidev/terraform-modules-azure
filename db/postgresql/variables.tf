@@ -2,10 +2,6 @@ variable "name" {
   description = "Name of server"
 }
 
-variable "location" {
-  description = "Azure Location"
-}
-
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
   type        = string

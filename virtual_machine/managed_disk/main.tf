@@ -12,7 +12,7 @@ data "terraform_remote_state" "resource_group" {
 
 resource "azurerm_managed_disk" "this" {
   name                 = var.name
-  location             = var.location
+  location             = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name  = data.terraform_remote_state.resource_group.outputs.name
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"

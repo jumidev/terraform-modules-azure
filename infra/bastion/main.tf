@@ -17,7 +17,7 @@ data "terraform_remote_state" "subnet" {
 
 resource "azurerm_public_ip" "this" {
   name                = "bastionip"
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -25,7 +25,7 @@ resource "azurerm_public_ip" "this" {
 
 resource "azurerm_bastion_host" "this" {
   name                = var.name
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   ip_configuration {

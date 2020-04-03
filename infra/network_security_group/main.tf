@@ -38,7 +38,7 @@ resource "random_string" "unique" {
 
 resource "azurerm_network_security_group" "this" {
   name                = var.name
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   dynamic "security_rule" {

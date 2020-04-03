@@ -22,7 +22,7 @@ resource "random_string" "unique" {
 resource "azurerm_storage_account" "storage" {
   name                      = local.name
   resource_group_name       = data.terraform_remote_state.resource_group.outputs.name
-  location                  = var.location
+  location                  = data.terraform_remote_state.resource_group.outputs.location
   account_kind              = var.account_kind
   account_tier              = var.account_tier
   account_replication_type  = var.account_replication_type

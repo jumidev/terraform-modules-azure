@@ -8,10 +8,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "location" {
-  description = "Azure location where resources should be deployed."
-}
-
 variable "machine_size" {
   description = "Instance size, see https://azureprice.net/."
   default     = "Standard_B1ls"
