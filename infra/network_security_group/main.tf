@@ -1,3 +1,12 @@
+locals {
+  # when priority not specified, auto assign them, starting at 200
+  auto_priorities = {
+    for i, k in keys(var.security_rules) :
+    k => i + 200
+  }
+
+}
+
 data "terraform_remote_state" "resource_group" {
   backend = "local"
 
@@ -20,15 +29,6 @@ data "terraform_remote_state" "application_security_groups" {
   }
 }
 
-resource "random_integer" "priority" {
-  min = 120
-  max = 4090
-  for_each = {
-    for k, i in var.security_rules :
-    k => i
-  }
-
-}
 
 resource "random_string" "unique" {
   length  = 6
@@ -50,7 +50,7 @@ resource "azurerm_network_security_group" "this" {
     }
     content {
       name                       = security_rule.key
-      priority                   = lookup(security_rule.value, "priority", random_integer.priority[security_rule.key].result) # 100
+      priority                   = lookup(security_rule.value, "priority", local.auto_priorities[security_rule.key])
       direction                  = lookup(security_rule.value, "direction", "Inbound")
       access                     = lookup(security_rule.value, "access", "Allow")
       protocol                   = lookup(security_rule.value, "protocol", "*")
@@ -71,7 +71,7 @@ resource "azurerm_network_security_group" "this" {
     }
     content {
       name                                  = security_rule.key
-      priority                              = lookup(security_rule.value, "priority", random_integer.priority[security_rule.key].result) # 100
+      priority                              = lookup(security_rule.value, "priority", local.auto_priorities[security_rule.key])
       direction                             = lookup(security_rule.value, "direction", "Inbound")
       access                                = lookup(security_rule.value, "access", "Allow")
       protocol                              = lookup(security_rule.value, "protocol", "*")
