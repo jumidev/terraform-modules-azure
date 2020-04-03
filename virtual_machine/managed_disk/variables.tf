@@ -8,15 +8,10 @@ variable "tags" {
   default     = {}
 }
 
-variable "location" {
-  description = "Azure location where resources should be deployed."
-}
-
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
   type        = string
 }
-
 
 variable "size" {
   description = "Size of disk, in GB.  Defaults to 30"

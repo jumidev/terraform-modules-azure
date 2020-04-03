@@ -18,7 +18,7 @@ data "terraform_remote_state" "resource_group" {
 
 resource "azurerm_postgresql_server" "this" {
   name                = var.name
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   sku_name = var.sku_name

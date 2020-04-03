@@ -39,7 +39,7 @@ data "terraform_remote_state" "private_subnet" {
 resource "azurerm_databricks_workspace" "this" {
   name                = var.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   sku                 = var.sku
 
   custom_parameters {

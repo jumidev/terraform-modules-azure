@@ -2,10 +2,6 @@ variable "name" {
   description = "Name of resource group to deploy resources in."
 }
 
-variable "location" {
-  description = "Location to deploy resources in."
-}
-
 variable "rspath_virtual_network" {
   description = "Remote state key of the virtual network."
 }

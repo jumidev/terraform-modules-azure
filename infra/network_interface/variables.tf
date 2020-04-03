@@ -2,10 +2,6 @@ variable "name" {
   description = "Name of resource group to deploy resources in."
 }
 
-variable "location" {
-  description = "Location to deploy resources in."
-}
-
 variable "tags" {
   description = "Tags to apply to all resources created."
   type        = map(string)

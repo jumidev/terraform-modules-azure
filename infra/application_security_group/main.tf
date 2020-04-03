@@ -8,7 +8,7 @@ data "terraform_remote_state" "resource_group" {
 
 resource "azurerm_application_security_group" "this" {
   name                = var.name
-  location            = var.location
+  location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
   tags = var.tags

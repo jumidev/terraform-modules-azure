@@ -2,10 +2,6 @@ variable "name" {
   description = "Name of dns zone.  e.g. myzone.example.com"
 }
 
-variable "location" {
-
-}
-
 variable "tags" {
   default = {}
 }

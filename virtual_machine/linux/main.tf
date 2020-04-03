@@ -70,7 +70,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   name                = var.name
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
 
-  location       = var.location
+  location       = data.terraform_remote_state.resource_group.outputs.location
   size           = var.machine_size
   admin_username = var.ssh_user
 
