@@ -102,6 +102,11 @@ variable "install_fail2ban" {
   default     = false
 }
 
+variable "install_python3" {
+  description = "Should python3 and pip be installed?  Defaults to false"
+  default     = false
+}
+
 
 variable "install_azcli" {
   description = "Should the azure cli be installed?  Defaults to false"
