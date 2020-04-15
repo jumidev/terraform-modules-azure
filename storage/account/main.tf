@@ -19,7 +19,7 @@ resource "random_string" "unique" {
   upper   = false
 }
 
-resource "azurerm_storage_account" "storage" {
+resource "azurerm_storage_account" "this" {
   name                      = local.name
   resource_group_name       = data.terraform_remote_state.resource_group.outputs.name
   location                  = data.terraform_remote_state.resource_group.outputs.location
@@ -43,16 +43,16 @@ resource "azurerm_storage_account" "storage" {
   tags = var.tags
 }
 
-resource "null_resource" "soft_delete" {
-  count = local.soft_delete
+# resource "null_resource" "soft_delete" {
+#   count = local.soft_delete
 
-  # TODO Not possible to do with azuread resources
-  provisioner "local-exec" {
-    command = "az storage blob service-properties delete-policy update --days-retained ${var.soft_delete_retention} --account-name ${azurerm_storage_account.storage.name} --enable true --subscription ${data.azurerm_client_config.current.subscription_id}"
-  }
+#   # TODO Not possible to do with azuread resources
+#   provisioner "local-exec" {
+#     command = "az storage blob service-properties delete-policy update --days-retained ${var.soft_delete_retention} --account-name ${azurerm_storage_account.storage.name} --enable true --subscription ${data.azurerm_client_config.current.subscription_id}"
+#   }
 
-  depends_on = [azurerm_storage_account.storage]
-}
+#   depends_on = [azurerm_storage_account.this]
+# }
 
 
 
