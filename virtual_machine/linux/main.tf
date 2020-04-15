@@ -1,6 +1,6 @@
 locals {
 
-  priority = var.spot_max_bid_price > 0 ? "Spot" : "Regular"
+  priority        = var.spot_max_bid_price > 0 ? "Spot" : "Regular"
   eviction_policy = var.spot_max_bid_price > 0 ? "Deallocate" : null
 
   distributions = {
@@ -77,7 +77,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   location       = data.terraform_remote_state.resource_group.outputs.location
   size           = var.machine_size
   admin_username = var.ssh_user
-  priority = local.priority
+  priority       = local.priority
 
   max_bid_price = var.spot_max_bid_price
 

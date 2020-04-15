@@ -42,3 +42,8 @@ variable "private_ip_address" {
   description = "If private_ip_address_allocation is set to Static, specify IP here"
   default     = ""
 }
+
+variable "enable_accelerated_networking" {
+    description = "(Optional) Should Accelerated Networking be enabled? Defaults to false.  Note: Only certain Virtual Machine sizes are supported for Accelerated Networking - see https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-cli"
+  default     = false 
+}

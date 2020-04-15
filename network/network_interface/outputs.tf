@@ -22,3 +22,11 @@ output "public_ip_address" {
   description = "Public ip of the network interface"
   value       = var.assign_public_ip ? azurerm_public_ip.this.0.ip_address : ""
 }
+
+output "mac_address" {
+  value = local.azurerm_network_interface.0.mac_address
+}
+
+output "enable_accelerated_networking" {
+  value = var.enable_accelerated_networking
+}

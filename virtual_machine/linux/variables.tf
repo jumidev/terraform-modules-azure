@@ -20,13 +20,13 @@ variable "machine_size" {
 
 variable "spot_max_bid_price" {
   description = "(Optional) The maximum price you're willing to pay for this Virtual Machine, in US Dollars; See https://azureprice.net/?currency=USD&priority=true"
-  default = -1
-  type = number
+  default     = -1
+  type        = number
 }
 
 variable "spot_eviction_policy" {
   description = "(Optional) Specifies what should happen when the Virtual Machine is evicted for price reasons when using a Spot instance."
-  default = "Deallocate"
+  default     = "Deallocate"
 }
 
 variable "rspath_resource_group" {
