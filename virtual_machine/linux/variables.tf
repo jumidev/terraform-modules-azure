@@ -13,6 +13,22 @@ variable "machine_size" {
   default     = "Standard_B1ls"
 }
 
+# variable "priority" {
+#   description = "(Optional) Specifies the priority of this Virtual Machine. Possible values are Regular and Spot. Defaults to Regular"
+#   default = "Regular"
+# }
+
+variable "spot_max_bid_price" {
+  description = "(Optional) The maximum price you're willing to pay for this Virtual Machine, in US Dollars; See https://azureprice.net/?currency=USD&priority=true"
+  default = -1
+  type = number
+}
+
+variable "spot_eviction_policy" {
+  description = "(Optional) Specifies what should happen when the Virtual Machine is evicted for price reasons when using a Spot instance."
+  default = "Deallocate"
+}
+
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
   type        = string
