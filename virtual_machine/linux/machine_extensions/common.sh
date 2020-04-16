@@ -12,3 +12,6 @@ ls -alF "\$@"
 EOF
 
 chmod +x /bin/ll
+
+# default runlevel 3
+systemctl set-default multi-user.target 
