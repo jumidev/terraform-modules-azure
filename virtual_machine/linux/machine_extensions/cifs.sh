@@ -1,3 +1,3 @@
 # install cifs client
 
-apt install -y cifs-utils
+which mount.cifs || apt install -y cifs-utils
