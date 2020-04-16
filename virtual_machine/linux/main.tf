@@ -33,6 +33,7 @@ locals {
     "export SSH_USER=${var.ssh_user}",
     var.swap_size_mb > 0 ? file("./machine_extensions/swap.sh") : "",
     file("./machine_extensions/common.sh"),
+    var.install_cifs ? file("./machine_extensions/cifs.sh") : "",
     var.install_python3 ? file("./machine_extensions/python3.sh") : "",
     var.install_docker ? file("./machine_extensions/docker.sh") : "",
     var.install_blobfuse ? file("./machine_extensions/blobfuse.sh") : "",

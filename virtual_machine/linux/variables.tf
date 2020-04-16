@@ -129,3 +129,7 @@ variable "install_azcli" {
   default     = false
 }
 
+variable "install_cifs" {
+  description = "Should the cifs (samba)  client be installed?  Defaults to false"
+  default     = false
+}
