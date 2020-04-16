@@ -7,6 +7,12 @@ variable "randomize_suffix" {
   default     = true
 }
 
+variable "rspath_subnets" {
+  description = "One or more subnets to connect this storage account to."
+  default     = []
+  type        = list(string)
+}
+
 variable "rspath_resource_group" {
   description = "Remote state key of resource group to deploy resources in."
 }
@@ -42,11 +48,11 @@ variable "soft_delete_retention" {
   default     = 31
 }
 
-variable "network_rules" {
-  description = "Network rules restricing access to the storage account."
-  type        = object({ ip_rules = list(string), subnet_ids = list(string), bypass = list(string) })
-  default     = null
-}
+# variable "network_rules" {
+#   description = "Network rules restricing access to the storage account."
+#   type        = object({ ip_rules = list(string), subnet_ids = list(string), bypass = list(string) })
+#   default     = null
+# }
 
 variable "tags" {
   description = "Tags to apply to all resources created."

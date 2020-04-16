@@ -34,6 +34,7 @@ variable "enforce_private_link_service_network_policies" {
 variable "service_endpoints" {
   description = "list of Service endpoints to associate with the subnet. Possible values include: Microsoft.AzureActiveDirectory. See https://www.terraform.io/docs/providers/azurerm/r/subnet.html#service_endpoints"
   default     = []
+  type        = list(string)
 }
 
 variable "delegations" {

@@ -53,10 +53,10 @@ data "terraform_remote_state" "network_security_group" {
 resource "azurerm_network_interface" "private" {
   count = var.assign_public_ip ? 0 : 1
 
-  name                = "${var.name}-private"
-  location            = data.terraform_remote_state.resource_group.outputs.location
-  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
-enable_accelerated_networking = var.enable_accelerated_networking
+  name                          = "${var.name}-private"
+  location                      = data.terraform_remote_state.resource_group.outputs.location
+  resource_group_name           = data.terraform_remote_state.resource_group.outputs.name
+  enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
     name                          = "this"
@@ -71,10 +71,10 @@ enable_accelerated_networking = var.enable_accelerated_networking
 resource "azurerm_network_interface" "public" {
   count = var.assign_public_ip ? 1 : 0
 
-  name                = "${var.name}-public"
-  location            = data.terraform_remote_state.resource_group.outputs.location
-  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
-enable_accelerated_networking = var.enable_accelerated_networking
+  name                          = "${var.name}-public"
+  location                      = data.terraform_remote_state.resource_group.outputs.location
+  resource_group_name           = data.terraform_remote_state.resource_group.outputs.name
+  enable_accelerated_networking = var.enable_accelerated_networking
 
 
   ip_configuration {

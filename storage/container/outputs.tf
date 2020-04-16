@@ -1,9 +1,9 @@
-output "container_id" {
+output "id" {
   description = "Name of the storage container created."
   value       = azurerm_storage_container.storage.id
 }
 
-output "container_name" {
+output "name" {
   description = "Name of the storage container created."
   value       = azurerm_storage_container.storage.name
 }
