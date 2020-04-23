@@ -27,10 +27,11 @@ locals {
   machine_extensions = [
     "#!/bin/bash\nset -eu",
     file("./machine_extensions/${var.linux_distribution}.sh"),
-    length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : "",
-    var.swap_size_mb > 0 ? "export SWAP_SIZE=${var.swap_size_mb}M" : "",
+    "export DATA_DISK_MOUNTPOINT=/data", # we define this in all cases, since it can be used in other scripts to verify presence of the data disk
     "export SWAP_FILE=${var.swap_file}",
     "export SSH_USER=${var.ssh_user}",
+    length(var.rspath_managed_disks) > 0 ? file("./machine_extensions/data_disk.sh") : "",
+    var.swap_size_mb > 0 ? "export SWAP_SIZE=${var.swap_size_mb}M" : "",
     var.swap_size_mb > 0 ? file("./machine_extensions/swap.sh") : "",
     file("./machine_extensions/common.sh"),
     var.install_cifs ? file("./machine_extensions/cifs.sh") : "",

@@ -1,3 +1,6 @@
+fusermount --version || (
+    apt install -y fuse
+)
 
 blobfuse --version || (
     export BLOBFUSE_VERSION=1.1.1
