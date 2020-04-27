@@ -54,6 +54,19 @@ variable "soft_delete_retention" {
 #   default     = null
 # }
 
+variable "authorized_cidrs" {
+  description = "List of CIDRs allowed to connect to this account to."
+  default     = []
+  type        = list(string)
+}
+
+
+variable "bypass" {
+  description = "(Optional) Specifies whether traffic is bypassed for Logging/Metrics/AzureServices"
+  default     = ["AzureServices"]
+  type        = list(string)
+}
+
 variable "tags" {
   description = "Tags to apply to all resources created."
   type        = map(string)

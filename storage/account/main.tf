@@ -1,6 +1,8 @@
 locals {
   soft_delete = var.is_hns_enabled ? 0 : var.soft_delete_retention != null ? 1 : 0
   name        = var.randomize_suffix ? format("%s%ssa", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.unique.result) : var.name
+
+  rules_count = length(var.rspath_subnets) + length(var.authorized_cidrs)
 }
 
 data "azurerm_client_config" "current" {}
@@ -41,27 +43,16 @@ resource "azurerm_storage_account" "this" {
   is_hns_enabled            = var.is_hns_enabled
   enable_https_traffic_only = true
 
-  # dynamic "network_rules" {
-  #   for_each = var.network_rules != null ? ["true"] : []
-  #   content {
-  #     default_action             = "Deny"
-  #     ip_rules                   = var.network_rules.ip_rules
-  #     virtual_network_subnet_ids = var.network_rules.subnet_ids
-  #     bypass                     = var.network_rules.bypass
-  #   }
-  # }
 
-  dynamic "network_rules" {
-    for_each = data.terraform_remote_state.subnets
-    content {
-      default_action = "Deny"
-      # subnet will need to have Microsoft.Storage in its service_endpoint input variable
-      virtual_network_subnet_ids = [network_rules.value.outputs.id]
-      # without this bypass, using the console to manage objects unde the share become broken
-      bypass = ["AzureServices"]
-    }
+  network_rules {
+
+    default_action = local.rules_count == 0 ? "Allow" : "Deny"
+    # subnet will need to have Microsoft.Storage in its service_endpoint input variable
+    virtual_network_subnet_ids = data.terraform_remote_state.subnets.*.outputs.id
+    # without this bypass, using the console to manage objects unde the share become broken
+    ip_rules = var.authorized_cidrs
+    bypass   = var.bypass
   }
-
   tags = var.tags
 }
 
