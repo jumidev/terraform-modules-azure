@@ -1,4 +1,7 @@
+locals {
+  enforce_private_link_endpoint_network_policies = length(var.service_endpoints) > 0 ? true : var.enforce_private_link_endpoint_network_policies
 
+}
 data "terraform_remote_state" "resource_group" {
   backend = "local"
 
@@ -31,7 +34,7 @@ resource "azurerm_subnet" "this" {
   # naming this "address_prefix" is inconsistent, since the virtual_network
   # component calls it "address_space", so using var.address_space
   address_prefix                                 = var.address_space
-  enforce_private_link_endpoint_network_policies = var.enforce_private_link_endpoint_network_policies
+  enforce_private_link_endpoint_network_policies = local.enforce_private_link_endpoint_network_policies
   enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
   service_endpoints                              = var.service_endpoints
 

@@ -3,8 +3,10 @@ terraform {
   required_providers {
     azurerm = "~> 2.4.0"
   }
+
   backend "local" {}
 }
+
 
 provider "azurerm" {
   # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
