@@ -1,20 +1,20 @@
-# output "name" {
-#   description = "Name of the resource."
-#   value       = var.name
-# }
-
-# output "id" {
-#   description = "Id of the resource."
-#   value       = azurerm_application_security_group.this.id
-# }
-
-
-output "role_assignments" {
-  description = "role assignments."
-  value       = var.role_assignments
+output "service_principal_id" {
+  description = "Service principal ID."
+  value = azuread_service_principal.this.application_id
 }
 
-# output "rs_states_role_assignments" {
-#   description = "role assignments."
-#   value       = data.terraform_remote_state.role_assignment_ids
-# }
+output "service_principal_name" {
+  description = "Service principal name."
+  value       = var.name
+}
+
+output "service_principal_key" {
+  description = "Service principal password."
+  value = azuread_service_principal_password.this.value
+  sensitive   = true
+}
+
+output "role_assignments" {
+  description = "Role assignments dictionnary."
+  value       = var.role_assignments
+}
