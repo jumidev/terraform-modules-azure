@@ -1,8 +1,8 @@
 # Create Azure AD App
 resource "azuread_application" "this" {
   name                       = var.name
-  available_to_other_tenants = false #var.available_to_other_tenants
-  oauth2_allow_implicit_flow = false #var.oauth2_allow_implicit_flow
+  available_to_other_tenants = var.available_to_other_tenants
+  oauth2_allow_implicit_flow = var.oauth2_allow_implicit_flow
 }
 
 # Create Service Principal associated with the Azure AD App
@@ -12,7 +12,7 @@ resource "azuread_service_principal" "this" {
 
 # Generate random string to be used as Service Principal password
 resource "random_string" "password" {
-  length  = 32
+  length  = var.password_lenght
   special = true
   # And keep it until a new service principal is generated
   keepers = {
@@ -24,13 +24,13 @@ resource "random_string" "password" {
 resource "azuread_service_principal_password" "this" {
   service_principal_id = azuread_service_principal.this.id
   value                = random_string.password.result
-  end_date_relative    = "17520h"
+  end_date_relative    = var.end_date_relative
 }
 
 # Retrieves paths to resources ids for role assignment
 data "terraform_remote_state" "role_assignment_ids" {
   for_each = var.role_assignments
-  backend = "local"
+  backend  = "local"
 
   config = {
     path = "${each.value.rspath_scope}/terraform.tfstate"

@@ -1,6 +1,6 @@
 output "service_principal_id" {
   description = "Service principal ID."
-  value = azuread_service_principal.this.application_id
+  value       = azuread_service_principal.this.application_id
 }
 
 output "service_principal_name" {
@@ -10,7 +10,7 @@ output "service_principal_name" {
 
 output "service_principal_key" {
   description = "Service principal password."
-  value = azuread_service_principal_password.this.value
+  value       = azuread_service_principal_password.this.value
   sensitive   = true
 }
 
