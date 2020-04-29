@@ -24,6 +24,12 @@ variable "rspath_network_interface_public_ip" {
   type        = string
 }
 
+variable "rspath_public_ip" {
+  description = "Remote state of public IP resources."
+  default     = ""
+  type        = string
+}
+
 variable "ip" {
   description = "IP of A record"
   type        = string
