@@ -22,3 +22,15 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azu
     fi
 
 )
+
+azcopy --version || (
+    AZCOPY_URL=https://azcopyvnext.azureedge.net/release20200425/azcopy_linux_amd64_10.4.1.tar.gz
+
+    mkdir -p /tmp/azcopy && cd /tmp/azcopy && curl $AZCOPY_URL -o azcopy.tar.gz 
+    mkdir azcopy 
+    tar -C azcopy -zxf azcopy.tar.gz 
+    cd az*/az* 
+    chmod +x azcopy 
+    mv azcopy /bin 
+    rm -rf /tmp/azcopy
+)
