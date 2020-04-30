@@ -36,6 +36,15 @@ data "terraform_remote_state" "network_interface_public_ip" {
   }
 }
 
+data "terraform_remote_state" "public_ip" {
+  count   = var.rspath_public_ip != "" ? 1 : 0
+  backend = "local"
+
+  config = {
+    path = "${var.rspath_public_ip}/terraform.tfstate"
+  }
+}
+
 resource "azurerm_dns_a_record" "this" {
   name                = var.name
   zone_name           = data.terraform_remote_state.dns_zone.outputs.name
@@ -44,5 +53,6 @@ resource "azurerm_dns_a_record" "this" {
   records = compact(concat(
     data.terraform_remote_state.network_interface_private_ip.*.outputs.private_ip_address,
     data.terraform_remote_state.network_interface_public_ip.*.outputs.public_ip_address,
+    data.terraform_remote_state.public_ip.*.outputs.ip_address,
   [var.ip]))
 }
