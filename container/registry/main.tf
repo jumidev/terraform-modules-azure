@@ -7,14 +7,13 @@ data "terraform_remote_state" "resource_group" {
   }
 }
 
-resource "azurerm_public_ip" "this" {
+resource "azurerm_container_registry" "this" {
   name                = var.name
   location            = data.terraform_remote_state.resource_group.outputs.location
   resource_group_name = data.terraform_remote_state.resource_group.outputs.name
   sku                 = var.sku
-  allocation_method   = var.allocation_method
-  domain_name_label   = var.domain_name_label
-  reverse_fqdn        = var.reverse_fqdn
+  admin_enabled       = var.admin_enabled
 
   tags = var.tags
 }
+
