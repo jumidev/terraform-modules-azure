@@ -4,8 +4,9 @@ This repo contains various terraform modules designed to be ready to work with [
 
 ## As small and generic as possible
 
-To avoid monolithic code, modules create as few resources as possible and strive to be as generic as possible.  In many cases they only create a single resource.
-Module variables expose the attributes of their resources as inputs, with defaults that match most cases. 
+- To avoid monolithic code, modules create as few resources as possible and strive to be as generic as possible.
+- Modules use remote state data to link with other modules.
+- Module variables expose the attributes of their resources as inputs, with defaults that match most cases. 
 
 # Coding conventions
 
@@ -16,7 +17,7 @@ To facilitate their ability to work together, these modules adhere to these codi
 - **backend.tf**: contains the `terraform` block with required terraform version, plugin version
 - **main.tf**: contains the main module code, including local vars, data and resources
 - **outputs.tf**: contains outputs
-- **variables.tf** variables
+- **variables.tf** contains variables
 
 ### Resource naming
 
@@ -31,6 +32,28 @@ resource "azurerm_virtual_network" "this" {
 
 terraform modules are tied to a specific remote state backend type.  All modules in this repo use the `local` backend type.  This has the disadvantage of requiring the use of third party filesystems to share remote states, however, this prevents having to manually create an azure account and container just to store the remote states.
 
+Remote state inputs are prefixed with `rspath_` e.g.
+
+```
+# variables.tf
+variable "rspath_resource_group" {
+  description = "Remote state key of resource group to deploy resources in."
+}
+
+# main.tf
+data "terraform_remote_state" "resource_group" {
+  backend = "local"
+  config = {
+    path = "${var.rspath_resource_group}/terraform.tfstate"
+  }
+}
+
+resource "azurerm_network_security_group" "this" {
+  name                = var.name
+  location            = data.terraform_remote_state.resource_group.outputs.location
+  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
+
+```
 
 ### Variables
 
@@ -44,7 +67,8 @@ In many cases, azure resources need a `location` attribute.  This should come fr
 
 ### Outputs
 
-All modules must provide at least two outputs, **id** and **name**.  These should **not be prefixed with the resource type** e.g. `resource_group_id`)
+All modules must provide at least two outputs, **id** and **name**.
+These should **not be prefixed with the resource type** e.g. `resource_group_id`)
 
 ```
 output "id" {
