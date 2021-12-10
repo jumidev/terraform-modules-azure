@@ -1,6 +1,6 @@
 # Terraform Modules for Azure
 
-This repo contains various terraform modules designed to be ready to work with [terrabuddy](https://github.com/weatherforce/terrabuddy).
+This repo contains various terraform modules designed to be ready to work with [terrabuddy](https://github.com/jumidev/terrabuddy).
 
 ## As small and generic as possible
 
@@ -30,7 +30,7 @@ resource "azurerm_virtual_network" "this" {
 
 ### Remote state keys
 
-terraform modules are tied to a specific remote state backend type.  All modules in this repo use the `local` backend type.  This has the disadvantage of requiring the use of third party filesystems to share remote states, however, this prevents having to manually create an azure account and container just to store the remote states.
+By design, terraform modules are tied to a specific remote state backend type.  All modules in this repo use the `local` backend type.  This has the disadvantage of requiring the use of third party filesystems to share remote states, however, this prevents having to manually create an azure account and container just to store the remote states.
 
 Remote state inputs are prefixed with `rspath_` e.g.
 
