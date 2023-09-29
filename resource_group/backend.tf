@@ -1,8 +1,3 @@
-terraform {
-  required_version = ">= 0.12.0"
-  backend "local" {}
-}
-
 provider "azurerm" {
   client_id       = var.arm_client_id
   client_secret   = var.arm_client_secret
