@@ -23,8 +23,8 @@ data "azurerm_resource_group" "this" {
 resource "azurerm_virtual_network" "this" {
   name                = var.name
   address_space       = var.address_spaces
-  location            = data.azurerm_resource_group.location
-  resource_group_name = data.azurerm_resource_group.name
+  location            = data.azurerm_resource_group.this.location
+  resource_group_name = data.azurerm_resource_group.this.name
 
   tags = var.tags
 }
