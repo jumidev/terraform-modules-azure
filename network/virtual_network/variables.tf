@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of resource group to deploy resources in."
+  description = "Name of virtual network."
 }
 
 variable "tags" {
@@ -8,14 +8,8 @@ variable "tags" {
   default     = {}
 }
 
-variable "rspath_resource_group" {
-  description = "Remote state key of resource group to deploy resources in."
-}
-
-variable "rspath_private_dns_zones" {
-  description = "List of Remote state keys of private dns zones to link to virtual network."
-  type        = list(string)
-  default     = []
+variable "resource_group_name" {
+  description = "Name of resource group to deploy resources in."
 }
 
 variable "address_spaces" {
