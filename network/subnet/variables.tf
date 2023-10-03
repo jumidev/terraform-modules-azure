@@ -1,17 +1,17 @@
 variable "name" {
-  description = "Name of resource group to deploy resources in."
+  description = "Name of resource."
 }
 
-variable "rspath_virtual_network" {
-  description = "Remote state key of the virtual network."
+variable "resource_group_name" {
+  description = "Name of resource group to deploy resource in."
 }
 
-variable "rspath_resource_group" {
-  description = "Remote state key of resource group to deploy resources in."
+variable "virtual_network_name" {
+  description = "virtual_network_name to deploy resource in."
 }
 
-variable "rspath_network_security_group" {
-  description = "Remote state key of an optional network securiy group to associate with this subnet."
+variable "network_security_group_id" {
+  description = "(optional) network securiy group id to associate with this subnet."
   type        = string
   default     = "" # none
 }

@@ -1,36 +1,21 @@
 locals {
   enforce_private_link_endpoint_network_policies = length(var.service_endpoints) > 0 ? true : var.enforce_private_link_endpoint_network_policies
-
-}
-data "terraform_remote_state" "resource_group" {
-  backend = "local"
-
-  config = {
-    path = "${var.rspath_resource_group}/terraform.tfstate"
-  }
 }
 
-data "terraform_remote_state" "virtual_network" {
-  backend = "local"
-
-  config = {
-    path = "${var.rspath_virtual_network}/terraform.tfstate"
-  }
+data "azurerm_resource_group" "this" {
+  name = var.resource_group_name
 }
 
-data "terraform_remote_state" "network_security_group" {
-  count   = var.rspath_network_security_group != "" ? 1 : 0
-  backend = "local"
-
-  config = {
-    path = "${var.rspath_network_security_group}/terraform.tfstate"
-  }
+data "azurerm_virtual_network" "this" {
+  name = var.virtual_network_name
+  resource_group_name = data.azurerm_resource_group.this.name
 }
+
 
 resource "azurerm_subnet" "this" {
   name                 = var.name
-  resource_group_name  = data.terraform_remote_state.resource_group.outputs.name
-  virtual_network_name = data.terraform_remote_state.virtual_network.outputs.name
+  resource_group_name  = data.azurerm_resource_group.this.name
+  virtual_network_name = data.azurerm_virtual_network.this.name
   # naming this "address_prefix" is inconsistent, since the virtual_network
   # component calls it "address_space", so using var.address_space
   address_prefix                                 = var.address_space
@@ -52,7 +37,7 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this" {
-  count                     = var.rspath_network_security_group != "" ? 1 : 0
+  count                     = var.network_security_group_id != "" ? 1 : 0
   subnet_id                 = azurerm_subnet.this.id
-  network_security_group_id = data.terraform_remote_state.network_security_group.0.outputs.id
+  network_security_group_id = var.network_security_group_id
 }
