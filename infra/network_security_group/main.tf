@@ -7,26 +7,21 @@ locals {
 
 }
 
-data "terraform_remote_state" "resource_group" {
-  backend = "local"
-
-  config = {
-    path = "${var.rspath_resource_group}/terraform.tfstate"
-  }
+data "azurerm_resource_group" "this" {
+  name = var.resource_group_name
 }
 
-data "terraform_remote_state" "application_security_groups" {
+data "azurerm_application_security_group" "this" {
+
   for_each = {
     for k, i in var.security_rules :
-    k => i.rskey_application_security_group
-    if lookup(i, "rskey_application_security_group", "") != ""
+    k => i.application_security_group
+    if lookup(i, "application_security_group", "") != ""
   }
 
-  backend = "local"
+  resource_group_name = data.azurerm_resource_group.this.name
+  name = each.value
 
-  config = {
-    path = "${each.value}/terraform.tfstate"
-  }
 }
 
 
@@ -38,15 +33,15 @@ resource "random_string" "unique" {
 
 resource "azurerm_network_security_group" "this" {
   name                = var.name
-  location            = data.terraform_remote_state.resource_group.outputs.location
-  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
+  location            = data.azurerm_resource_group.this.location
+  resource_group_name = data.azurerm_resource_group.this.name
 
   dynamic "security_rule" {
     # security rules with source address
     for_each = {
       for k, i in var.security_rules :
       k => i
-      if lookup(i, "rskey_application_security_group", "") == ""
+      if lookup(i, "application_security_group", "") == ""
     }
     content {
       name                       = security_rule.key
@@ -67,7 +62,7 @@ resource "azurerm_network_security_group" "this" {
     for_each = {
       for k, i in var.security_rules :
       k => i
-      if lookup(i, "rskey_application_security_group", "") != ""
+      if lookup(i, "application_security_group", "") != ""
     }
     content {
       name                                  = security_rule.key
@@ -78,8 +73,7 @@ resource "azurerm_network_security_group" "this" {
       source_port_range                     = lookup(security_rule.value, "source_port_range", "*")
       destination_port_range                = security_rule.value.destination_port_range
       destination_address_prefix            = lookup(security_rule.value, "destination_address_prefix", "*")
-      source_application_security_group_ids = [lookup(data.terraform_remote_state.application_security_groups, security_rule.key).outputs.id]
-
+      source_application_security_group_ids = [lookup(data.azurerm_application_security_group.this, security_rule.key).id]
     }
   }
 
