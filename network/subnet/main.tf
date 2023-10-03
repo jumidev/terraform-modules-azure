@@ -18,7 +18,7 @@ resource "azurerm_subnet" "this" {
   virtual_network_name = data.azurerm_virtual_network.this.name
   # naming this "address_prefix" is inconsistent, since the virtual_network
   # component calls it "address_space", so using var.address_space
-  address_prefix                                 = var.address_space
+  address_prefixes                               = var.address_prefixes
   enforce_private_link_endpoint_network_policies = local.enforce_private_link_endpoint_network_policies
   enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
   service_endpoints                              = var.service_endpoints

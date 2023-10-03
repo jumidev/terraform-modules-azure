@@ -16,9 +16,9 @@ variable "network_security_group_id" {
   default     = "" # none
 }
 
-variable "address_space" {
-  description = "CIDR of subnet. e.g. 10.0.1.0/24"
-  default     = "10.0.1.0/24"
+variable "address_prefixes" {
+  description = "CIDR(s) of subnet. e.g. 10.0.1.0/24"
+  default     = ["10.0.1.0/24"]
 }
 
 variable "enforce_private_link_endpoint_network_policies" {
