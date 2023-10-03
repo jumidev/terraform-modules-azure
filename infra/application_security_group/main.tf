@@ -1,15 +1,12 @@
-data "terraform_remote_state" "resource_group" {
-  backend = "local"
-
-  config = {
-    path = "${var.rspath_resource_group}/terraform.tfstate"
-  }
+data "azurerm_resource_group" "this" {
+  name = var.resource_group_name
 }
+
 
 resource "azurerm_application_security_group" "this" {
   name                = var.name
-  location            = data.terraform_remote_state.resource_group.outputs.location
-  resource_group_name = data.terraform_remote_state.resource_group.outputs.name
+  location            = data.azurerm_resource_group.this.location
+  resource_group_name = data.azurerm_resource_group.this.name
 
   tags = var.tags
 

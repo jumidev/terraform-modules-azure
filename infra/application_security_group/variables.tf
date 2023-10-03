@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of resource group to deploy resources in."
+  description = "Name of resource."
 }
 
 variable "tags" {
@@ -8,7 +8,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "rspath_resource_group" {
-  description = "Remote state key of resource group to deploy resources in."
+variable "resource_group_name" {
+  description = "Name of resource group to deploy resources in."
 }
-
